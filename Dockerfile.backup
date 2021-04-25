@@ -1,0 +1,30 @@
+# pull the official base image
+FROM node:alpine
+RUN apk update && apk add git && apk add python make g++
+
+# set working direction
+WORKDIR /app
+
+# install application dependencies
+COPY package.json /app
+#COPY package-lock.json ./
+
+# to fix permissions for packages
+RUN npm config set unsafe-perm true
+
+RUN npm install --force
+
+# add `/app/node_modules/.bin` to $PATH
+#ENV PATH /app/node_modules/.bin:$PATH
+
+# add app
+COPY . /app
+
+RUN chown -R node /app/node_modules
+
+USER node
+
+RUN whoami
+
+# start app
+CMD ["npm", "run", "start"]
