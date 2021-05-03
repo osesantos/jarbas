@@ -1,0 +1,7 @@
+.App {
+  display: flex;
+  position: relative;
+  min-height: 100%;
+  background: darkolivegreen;
+}
+
