@@ -3,7 +3,7 @@ import "./RefreshButton.css"
 function RefreshButton() {
   return (
     <div className="refresh-button">
-      <button>"Refresh"</button>
+      <button>Refresh</button>
     </div>
   );
 }

@@ -1,3 +1,5 @@
 .refresh-button{
-    background-color: indigo;
+    top: 5%;
+    right: 5%;
+    position: absolute;
 }
