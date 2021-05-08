@@ -1,8 +1,19 @@
 .main-view{
     position:absolute;
     display: flex;
+    flex-direction: column;
     flex-flow: column;
     background: darkslategray;
     height: 100%;
     width: 100%;
+}
+
+.pulls-list-container{
+    display: flex;
+    position: relative;
+}
+
+.refresh-button{
+    display: flex;
+    position: relative;
 }
