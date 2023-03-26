@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/chatgpt.iml" filepath="$PROJECT_DIR$/.idea/chatgpt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/jarbas-go.iml" filepath="$PROJECT_DIR$/.idea/jarbas-go.iml" />
     </modules>
   </component>
 </project>
