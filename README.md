@@ -1,7 +1,7 @@
 # jarbas
 jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 
-![image](https://user-images.githubusercontent.com/20876378/227887328-71d1a5e5-d041-42ae-9e88-396131193fdc.png)
+![image](https://user-images.githubusercontent.com/20876378/227887438-f0d6b129-0c4c-4ca6-8be6-a180c08a32fd.png)
 
 
 ## How to build it?
