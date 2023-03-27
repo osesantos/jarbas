@@ -22,5 +22,6 @@ Note: create a link on to the `main` so that it will be accessible anywhere
 $ ln main /usr/local/bin/jarbas
 ```
 
+
 ### Todo
 - [ ] Create new subcommand to enter into chat mode, This mode will keep track of the messages and use the chatcompletion API to keep a chat session open. 
