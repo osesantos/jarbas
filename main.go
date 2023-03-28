@@ -23,19 +23,35 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "chat",
+				Aliases: []string{"c"},
+				Usage:   "Start a chat with jarbas",
+				Action: func(cCtx *cli.Context) error {
+					key, err := commands.GetKey()
+					if err != nil {
+						return err
+					}
+					err = commands.Chat(key)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
 				Value:   "~/.jarbasrc",
-				Aliases: []string{"c"},
-				Usage:   "Load configuration from `FILE`",
+				Aliases: []string{"i"},
+				Usage:   "Input configuration from `FILE`",
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
 			key, err := commands.GetKey()
 			if err != nil {
-				fmt.Println(err)
+				return err
 			}
 			question := cCtx.Args().Get(0)
 			response, err := actions.Question(question, key)
