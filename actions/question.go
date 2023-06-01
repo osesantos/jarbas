@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-func Question(input string, apiKey string) (string, error) {
+func Question(input string, apiKey string, model string) (string, error) {
 	// Define the request body as a JSON object
 	body := map[string]interface{}{
-		"model": "gpt-3.5-turbo",
+		"model": model,
 		"messages": []map[string]string{
 			{"role": "user", "content": input},
 		},
@@ -24,7 +24,7 @@ func Question(input string, apiKey string) (string, error) {
 	return text, nil
 }
 
-func ChatQuestion(messages []map[string]interface{}, question string, apiKey string) ([]map[string]interface{}, string, error) {
+func ChatQuestion(messages []map[string]interface{}, question string, apiKey string, model string) ([]map[string]interface{}, string, error) {
 	newQuestion := map[string]interface{}{
 		"role": "user", "content": question,
 	}
@@ -33,7 +33,7 @@ func ChatQuestion(messages []map[string]interface{}, question string, apiKey str
 
 	// Define the request body as a JSON object
 	body := map[string]interface{}{
-		"model":    "gpt-3.5-turbo",
+		"model":    model,
 		"messages": finalMessage,
 	}
 	respData, err := request(body, apiKey)

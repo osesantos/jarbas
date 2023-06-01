@@ -32,7 +32,11 @@ func main() {
 					if err != nil {
 						return err
 					}
-					err = commands.Chat(key)
+					model, err := commands.GetModel()
+					if err != nil {
+						return err
+					}
+					err = commands.Chat(key, model)
 					if err != nil {
 						return err
 					}
@@ -53,8 +57,12 @@ func main() {
 			if err != nil {
 				return err
 			}
+			model, err := commands.GetModel()
+			if err != nil {
+				return err
+			}
 			question := cCtx.Args().Get(0)
-			response, err := actions.Question(question, key)
+			response, err := actions.Question(question, key, model)
 			if err != nil {
 				return err
 			}

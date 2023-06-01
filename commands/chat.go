@@ -6,7 +6,7 @@ import (
 	"jarbas-go/main/actions"
 )
 
-func Chat(apKey string) error {
+func Chat(apKey string, model string) error {
 	var messages []map[string]interface{}
 	for {
 		input, err := getInput()
@@ -14,7 +14,7 @@ func Chat(apKey string) error {
 			break
 		}
 
-		respMessages, answer, err := actions.ChatQuestion(messages, input, apKey)
+		respMessages, answer, err := actions.ChatQuestion(messages, input, apKey, model)
 		if err != nil {
 			return err
 		}
