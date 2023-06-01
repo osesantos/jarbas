@@ -3,8 +3,17 @@ package actions
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
+
+type Answer struct {
+	PreviousMessages []map[string]interface{}
+	LastMessage      string
+	PromptToken      string
+	CompletionToken  string
+	TotalToken       string
+}
 
 func Question(input string, apiKey string, model string) (string, error) {
 	// Define the request body as a JSON object
@@ -24,7 +33,7 @@ func Question(input string, apiKey string, model string) (string, error) {
 	return text, nil
 }
 
-func ChatQuestion(messages []map[string]interface{}, question string, apiKey string, model string) ([]map[string]interface{}, string, error) {
+func ChatQuestion(messages []map[string]interface{}, question string, apiKey string, model string) (Answer, error) {
 	newQuestion := map[string]interface{}{
 		"role": "user", "content": question,
 	}
@@ -38,13 +47,25 @@ func ChatQuestion(messages []map[string]interface{}, question string, apiKey str
 	}
 	respData, err := request(body, apiKey)
 	if err != nil {
-		return nil, "", err
+		return Answer{}, err
 	}
 
 	lastMessage := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
 	messagesRequest := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})
 
-	return append(finalMessage, messagesRequest), lastMessage, nil
+	promptTokens := respData["usage"].(map[string]interface{})["prompt_tokens"]
+	completionTokens := respData["usage"].(map[string]interface{})["completion_tokens"]
+	totalTokens := respData["usage"].(map[string]interface{})["total_tokens"]
+
+	answer := Answer{
+		PreviousMessages: append(finalMessage, messagesRequest),
+		LastMessage:      lastMessage,
+		PromptToken:      fmt.Sprint(promptTokens),
+		CompletionToken:  fmt.Sprint(completionTokens),
+		TotalToken:       fmt.Sprint(totalTokens),
+	}
+
+	return answer, nil
 }
 
 func request(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
