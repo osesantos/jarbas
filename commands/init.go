@@ -90,6 +90,7 @@ func GetKey() (string, error) {
 	// Open the file for reading
 	file, err := os.Open(path)
 	if err != nil {
+		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
 		return "", err
 	}
 	defer file.Close()
@@ -123,6 +124,7 @@ func GetModel() (string, error) {
 	// Open the file for reading
 	file, err := os.Open(path)
 	if err != nil {
+		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
 		return "", err
 	}
 	defer file.Close()

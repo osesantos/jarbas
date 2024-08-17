@@ -29,13 +29,11 @@ func main() {
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
 					key, err := commands.GetKey()
-					if err != nil {
-						return err
-					}
 					model, err := commands.GetModel()
 					if err != nil {
 						return err
 					}
+
 					err = commands.Chat(key, model)
 					if err != nil {
 						return err
@@ -54,20 +52,18 @@ func main() {
 		},
 		Action: func(cCtx *cli.Context) error {
 			key, err := commands.GetKey()
-			if err != nil {
-				return err
-			}
 			model, err := commands.GetModel()
 			if err != nil {
 				return err
 			}
+
 			question := cCtx.Args().Get(0)
 			response, err := actions.Question(question, key, model)
 			if err != nil {
 				return err
 			}
-			fmt.Println("question: " + question)
-			fmt.Println("answer: " + response)
+			fmt.Println(commands.QuestionPrompt + question)
+			fmt.Println(commands.DefaultPrompt + response)
 			return nil
 		},
 	}

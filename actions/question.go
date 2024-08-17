@@ -20,6 +20,22 @@ type Answer struct {
 	TotalToken string
 }
 
+func validateResponse(response interface{}) (string, error) {
+	if response == nil {
+		return "", fmt.Errorf("response is nil")
+	}
+
+	if response == "" {
+		return "", fmt.Errorf("response is empty")
+	}
+
+	if response.([]interface{})[0] == nil {
+		return response.(string), fmt.Errorf("response is not the expected type")
+	}
+
+	return fmt.Sprint(response), nil
+}
+
 func Question(input string, apiKey string, model string) (string, error) {
 	// Define the request body as a JSON object
 	body := map[string]interface{}{
@@ -31,6 +47,11 @@ func Question(input string, apiKey string, model string) (string, error) {
 	respData, err := request(body, apiKey)
 	if err != nil {
 		return "", err
+	}
+
+	response, err := validateResponse(respData["choices"])
+	if err != nil {
+		return response, err
 	}
 
 	text := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)

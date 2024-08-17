@@ -6,8 +6,9 @@ import (
 	"jarbas-go/main/actions"
 )
 
-const defaultPrompt = "\u001B[1;34manswer:\u001B[0m "
-const tokenPrompt = "\u001B[1;35mtoken:\u001B[0m "
+const DefaultPrompt = "\u001B[1;34manswer:\u001B[0m "
+const TokenPrompt = "\u001B[1;35mtoken:\u001B[0m "
+const QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 
 func Chat(apKey string, model string) error {
 	var messages []map[string]interface{}
@@ -33,9 +34,9 @@ func Chat(apKey string, model string) error {
 
 			messages = answer.PreviousMessages
 			if withToken {
-				fmt.Println(tokenPrompt + answer.TotalToken + " " + defaultPrompt + answer.LastMessage)
+				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt + answer.LastMessage)
 			} else {
-				fmt.Println(defaultPrompt + answer.LastMessage)
+				fmt.Println(DefaultPrompt + answer.LastMessage)
 			}
 		}
 	}
