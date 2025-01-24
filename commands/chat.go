@@ -45,7 +45,7 @@ func Chat(apKey string, model string) error {
 
 func getInput() (string, error) {
 	question := ""
-	prompt := &survey.Input{
+	prompt := &survey.Multiline{
 		Message: "question: ",
 		Help: "Write 'exit' or press Ctrl-C to close the chat.\n" +
 			"Write 'token' to activate and deactivate token information.",
