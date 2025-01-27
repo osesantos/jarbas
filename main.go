@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
 	"jarbas-go/main/actions"
 	"jarbas-go/main/commands"
 	"log"
 	"os"
+
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 				Action: func(cCtx *cli.Context) error {
 					key, err := commands.GetKey()
 					model, err := commands.GetModel()
+					save_messages, err := commands.GetSaveMessages()
 					if err != nil {
 						return err
 					}

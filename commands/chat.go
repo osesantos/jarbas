@@ -2,15 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"github.com/AlecAivazis/survey/v2"
 	"jarbas-go/main/actions"
+
+	"github.com/AlecAivazis/survey/v2"
 )
 
 const DefaultPrompt = "\u001B[1;34manswer:\u001B[0m "
 const TokenPrompt = "\u001B[1;35mtoken:\u001B[0m "
 const QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 
-func Chat(apKey string, model string) error {
+func Chat(apKey string, model string, save_messages bool) error {
 	var messages []map[string]interface{}
 	var withToken = false
 	for {
@@ -40,6 +41,14 @@ func Chat(apKey string, model string) error {
 			}
 		}
 	}
+
+	if save_messages {
+		err := actions.SaveMessages(messages)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
