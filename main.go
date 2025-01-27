@@ -36,7 +36,7 @@ func main() {
 						return err
 					}
 
-					err = commands.Chat(key, model)
+					err = commands.Chat(key, model, save_messages)
 					if err != nil {
 						return err
 					}

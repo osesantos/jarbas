@@ -8,9 +8,12 @@ import (
 	"strings"
 )
 
+const api_url_key = "api_url: "
+const request_headers_key = "request_headers: "
 const api_key = "api_key: "
 const model_key = "model: "
 const save_messages_key = "save_messages: "
+
 const config_file = "/.jarbasrc"
 
 func Init() {
@@ -100,11 +103,27 @@ func _writeSaveMessages(f *os.File) error {
 	return nil
 }
 
-func GetKey() (string, error) {
+func _writeApiUrl(f *os.File) error {
+	fmt.Println("What's the API URL: ")
+	// Read input from the user
+	apiUrl := ""
+	_, err := fmt.Scanln(&apiUrl)
+	if err != nil {
+		return err
+	}
+
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", api_url_key, apiUrl))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func _getFile() (*os.File, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return nil, err
 	}
 
 	path := filepath.Join(homeDir, config_file)
@@ -113,8 +132,18 @@ func GetKey() (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
+		return nil, err
+	}
+
+	return file, nil
+}
+
+func GetKey() (string, error) {
+	file, err := _getFile()
+	if err != nil {
 		return "", err
 	}
+
 	defer file.Close()
 
 	// Create a new scanner to read the file
@@ -135,20 +164,11 @@ func GetKey() (string, error) {
 }
 
 func GetModel() (string, error) {
-	homeDir, err := os.UserHomeDir()
+	file, err := _getFile()
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
-	path := filepath.Join(homeDir, config_file)
-
-	// Open the file for reading
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
-		return "", err
-	}
 	defer file.Close()
 
 	// Create a new scanner to read the file
@@ -168,21 +188,12 @@ func GetModel() (string, error) {
 	return "", bufio.ErrFinalToken
 }
 
-func GetSaveMessages(string, error) (bool, error) {
-	homeDir, err := os.UserHomeDir()
+func GetSaveMessages() (bool, error) {
+	file, err := _getFile()
 	if err != nil {
-		fmt.Println(err)
 		return false, err
 	}
 
-	path := filepath.Join(homeDir, config_file)
-
-	// Open the file for reading
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
-		return false, err
-	}
 	defer file.Close()
 
 	// Create a new scanner to read the file
@@ -208,4 +219,58 @@ func GetSaveMessages(string, error) (bool, error) {
 
 	// Return an error if the file is empty
 	return false, bufio.ErrFinalToken
+}
+
+func GetApiUrl() (string, error) {
+	file, err := _getFile()
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	// Create a new scanner to read the file
+	scanner := bufio.NewScanner(file)
+
+	// Read the first line of the file
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, api_url_key) {
+			return strings.TrimPrefix(line, api_url_key), nil
+		}
+	}
+
+	// Return an error if the file is empty
+	return "", bufio.ErrFinalToken
+}
+
+func GetRequestHeaders() (map[string]string, error) {
+	file, err := _getFile()
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	// Create a new scanner to read the file
+	scanner := bufio.NewScanner(file)
+
+	headers := map[string]string{}
+
+	// Read the first line of the file
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, request_headers_key) {
+			headersLine := strings.TrimPrefix(line, request_headers_key)
+			headersList := strings.Split(headersLine, ",")
+			for _, header := range headersList {
+				headerParts := strings.Split(header, ":")
+				headers[headerParts[0]] = headerParts[1]
+			}
+			return headers, nil
+		}
+	}
+
+	// Return an error if the file is empty
+	return nil, bufio.ErrFinalToken
 }
