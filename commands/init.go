@@ -8,13 +8,15 @@ import (
 	"strings"
 )
 
-const api_url_key = "api_url: "
-const request_headers_key = "request_headers: "
-const api_key = "api_key: "
-const model_key = "model: "
-const save_messages_key = "save_messages: "
+const (
+	apiURLKey         = "api_url: "
+	requestHeadersKey = "request_headers: "
+	apiKey            = "api_key: "
+	modelKey          = "model: "
+	saveMessagesKey   = "save_messages: "
+)
 
-const config_file = "/.jarbasrc"
+const configFile = "/.jarbasrc"
 
 func Init() {
 	homeDir, err := os.UserHomeDir()
@@ -23,9 +25,9 @@ func Init() {
 		return
 	}
 
-	path := filepath.Join(homeDir, config_file)
+	path := filepath.Join(homeDir, configFile)
 
-	f, err := os.OpenFile(path, os.O_WRONLY, 0644)
+	f, err := os.OpenFile(path, os.O_WRONLY, 0o644)
 	if os.IsNotExist(err) {
 		f, err = os.Create(path)
 		if err != nil {
@@ -63,7 +65,7 @@ func _writeKey(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", api_key, key))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", apiKey, key))
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -80,7 +82,7 @@ func _writeModel(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model_key, model))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", modelKey, model))
 	if err != nil {
 		return err
 	}
@@ -96,7 +98,7 @@ func _writeSaveMessages(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", save_messages_key, save))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", saveMessagesKey, save))
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,7 @@ func _writeApiUrl(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", api_url_key, apiUrl))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", apiURLKey, apiUrl))
 	if err != nil {
 		return err
 	}
@@ -126,7 +128,7 @@ func _getFile() (*os.File, error) {
 		return nil, err
 	}
 
-	path := filepath.Join(homeDir, config_file)
+	path := filepath.Join(homeDir, configFile)
 
 	// Open the file for reading
 	file, err := os.Open(path)
@@ -152,9 +154,9 @@ func GetKey() (string, error) {
 	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, api_key) {
+		if strings.Contains(line, apiKey) {
 			// Remove the "api-key: " prefix from the line
-			apiKey := strings.TrimPrefix(line, api_key)
+			apiKey := strings.TrimPrefix(line, apiKey)
 			return apiKey, nil
 		}
 	}
@@ -177,9 +179,9 @@ func GetModel() (string, error) {
 	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, model_key) {
+		if strings.Contains(line, modelKey) {
 			// Remove the "api-key: " prefix from the line
-			apiKey := strings.TrimPrefix(line, model_key)
+			apiKey := strings.TrimPrefix(line, modelKey)
 			return apiKey, nil
 		}
 	}
@@ -202,8 +204,8 @@ func GetSaveMessages() (bool, error) {
 	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, save_messages_key) {
-			option := strings.TrimPrefix(line, save_messages_key)
+		if strings.Contains(line, saveMessagesKey) {
+			option := strings.TrimPrefix(line, saveMessagesKey)
 
 			if option == "n" {
 				return false, nil
@@ -213,7 +215,7 @@ func GetSaveMessages() (bool, error) {
 				return true, nil
 			}
 
-			return false, fmt.Errorf("Invalid option: %s", option)
+			return false, fmt.Errorf("invalid option: %s", option)
 		}
 	}
 
@@ -221,7 +223,7 @@ func GetSaveMessages() (bool, error) {
 	return false, bufio.ErrFinalToken
 }
 
-func GetApiUrl() (string, error) {
+func GetAPIUrl() (string, error) {
 	file, err := _getFile()
 	if err != nil {
 		return "", err
@@ -235,8 +237,8 @@ func GetApiUrl() (string, error) {
 	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, api_url_key) {
-			return strings.TrimPrefix(line, api_url_key), nil
+		if strings.Contains(line, apiURLKey) {
+			return strings.TrimPrefix(line, apiURLKey), nil
 		}
 	}
 
@@ -260,8 +262,8 @@ func GetRequestHeaders() (map[string]string, error) {
 	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, request_headers_key) {
-			headersLine := strings.TrimPrefix(line, request_headers_key)
+		if strings.Contains(line, requestHeadersKey) {
+			headersLine := strings.TrimPrefix(line, requestHeadersKey)
 			headersList := strings.Split(headersLine, ",")
 			for _, header := range headersList {
 				headerParts := strings.Split(header, ":")

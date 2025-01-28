@@ -1,23 +1,44 @@
 package commands
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"jarbas-go/main/actions"
 
 	"github.com/AlecAivazis/survey/v2"
 )
 
-const DefaultPrompt = "\u001B[1;34manswer:\u001B[0m "
-const TokenPrompt = "\u001B[1;35mtoken:\u001B[0m "
-const QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
+const (
+	DefaultPrompt  = "\u001B[1;34manswer:\u001B[0m "
+	TokenPrompt    = "\u001B[1;35mtoken:\u001B[0m "
+	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
+)
 
-func Chat(apKey string, model string, save_messages bool) error {
-	var messages []map[string]interface{}
-	var withToken = false
+func Chat(apKey string, model string, saveMessages bool, messages []map[string]interface{}) error {
+	if messages == nil {
+		messages = []map[string]interface{}{}
+	}
+
+	fmt.Println("Welcome to the chat! Write 'exit' or press Ctrl-C to close the chat.")
+	fmt.Println("Write 'token' to activate and deactivate token information.")
+	fmt.Println("Write 'editor' to open an editor to write your question.")
+	fmt.Println("")
+
+	withToken := false
 	for {
-		input, err := getInput()
+		input, err := _getInput()
 		if err != nil || input == "exit" {
 			break
+		}
+
+		if input == "editor" {
+			input, err = _getEditor()
+			if err != nil {
+				return err
+			}
 		}
 
 		if input == "token" {
@@ -42,8 +63,8 @@ func Chat(apKey string, model string, save_messages bool) error {
 		}
 	}
 
-	if save_messages {
-		err := actions.SaveMessages(messages)
+	if saveMessages {
+		err := SaveConversation(messages)
 		if err != nil {
 			return err
 		}
@@ -52,12 +73,33 @@ func Chat(apKey string, model string, save_messages bool) error {
 	return nil
 }
 
-func getInput() (string, error) {
+func ContinueChat(apKey string, model string, saveMessages bool) error {
+	file, err := _listConversations()
+	if err != nil {
+		return err
+	}
+
+	// parse conversation string to []map[string]interface{}
+	messages, err := _loadConversation(file)
+	if err != nil {
+		return err
+	}
+
+	err = Chat(apKey, model, saveMessages, messages)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func _getInput() (string, error) {
 	question := ""
-	prompt := &survey.Multiline{
+	prompt := &survey.Input{
 		Message: "question: ",
 		Help: "Write 'exit' or press Ctrl-C to close the chat.\n" +
-			"Write 'token' to activate and deactivate token information.",
+			"Write 'token' to activate and deactivate token information.\n" +
+			"Write 'editor' to open an editor to write your question.",
 	}
 	err := survey.AskOne(prompt, &question)
 	if err != nil {
@@ -65,4 +107,58 @@ func getInput() (string, error) {
 	}
 
 	return question, nil
+}
+
+func _getEditor() (string, error) {
+	editor := ""
+	prompt := &survey.Editor{
+		Message: "editor:",
+	}
+	err := survey.AskOne(prompt, &editor)
+	if err != nil {
+		return "", err
+	}
+
+	return editor, nil
+}
+
+func _listConversations() (string, error) {
+	file := ""
+	prompt := &survey.Input{
+		Message: "conversation to open:",
+		Suggest: func(toComplete string) []string {
+			dir := GetCacheDir()
+			files, _ := filepath.Glob(dir + "/" + toComplete + "*")
+			return files
+		},
+	}
+	err := survey.AskOne(prompt, &file)
+	if err != nil {
+		return "", err
+	}
+
+	return file, nil
+}
+
+func _loadConversation(file string) ([]map[string]interface{}, error) {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	messages, err := _parse(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+func _parse(data []byte) ([]map[string]interface{}, error) {
+	var respData []map[string]interface{}
+	err := json.Unmarshal(data, &respData)
+	if err != nil {
+		return nil, err
+	}
+	return respData, nil
 }

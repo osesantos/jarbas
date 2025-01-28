@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"jarbas-go/main/actions"
-	"jarbas-go/main/commands"
 	"log"
 	"os"
+
+	"jarbas-go/main/actions"
+	"jarbas-go/main/commands"
 
 	"github.com/urfave/cli/v2"
 )
@@ -30,13 +31,48 @@ func main() {
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
 					key, err := commands.GetKey()
-					model, err := commands.GetModel()
-					save_messages, err := commands.GetSaveMessages()
 					if err != nil {
 						return err
 					}
 
-					err = commands.Chat(key, model, save_messages)
+					model, err := commands.GetModel()
+					if err != nil {
+						return err
+					}
+
+					saveMessages, err := commands.GetSaveMessages()
+					if err != nil {
+						return err
+					}
+
+					err = commands.Chat(key, model, saveMessages, nil)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
+			{
+				Name:    "continue-chat",
+				Aliases: []string{"cc"},
+				Usage:   "Continue a chat with jarbas",
+				Action: func(cCtx *cli.Context) error {
+					key, err := commands.GetKey()
+					if err != nil {
+						return err
+					}
+
+					model, err := commands.GetModel()
+					if err != nil {
+						return err
+					}
+
+					saveMessages, err := commands.GetSaveMessages()
+					if err != nil {
+						return err
+					}
+
+					err = commands.ContinueChat(key, model, saveMessages)
 					if err != nil {
 						return err
 					}
@@ -54,6 +90,10 @@ func main() {
 		},
 		Action: func(cCtx *cli.Context) error {
 			key, err := commands.GetKey()
+			if err != nil {
+				return err
+			}
+
 			model, err := commands.GetModel()
 			if err != nil {
 				return err
