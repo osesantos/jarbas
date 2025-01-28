@@ -7,6 +7,7 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/commands"
+	"jarbas-go/main/model"
 
 	"github.com/urfave/cli/v2"
 )
@@ -30,22 +31,12 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					key, err := commands.GetKey()
+					settings, err := model.GetSettings()
 					if err != nil {
 						return err
 					}
 
-					model, err := commands.GetModel()
-					if err != nil {
-						return err
-					}
-
-					saveMessages, err := commands.GetSaveMessages()
-					if err != nil {
-						return err
-					}
-
-					err = commands.Chat(key, model, saveMessages, nil)
+					err = commands.Chat(settings, nil)
 					if err != nil {
 						return err
 					}
@@ -57,22 +48,12 @@ func main() {
 				Aliases: []string{"cc"},
 				Usage:   "Continue a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					key, err := commands.GetKey()
+					settings, err := model.GetSettings()
 					if err != nil {
 						return err
 					}
 
-					model, err := commands.GetModel()
-					if err != nil {
-						return err
-					}
-
-					saveMessages, err := commands.GetSaveMessages()
-					if err != nil {
-						return err
-					}
-
-					err = commands.ContinueChat(key, model, saveMessages)
+					err = commands.ContinueChat(settings)
 					if err != nil {
 						return err
 					}
@@ -89,18 +70,13 @@ func main() {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			key, err := commands.GetKey()
-			if err != nil {
-				return err
-			}
-
-			model, err := commands.GetModel()
+			settings, err := model.GetSettings()
 			if err != nil {
 				return err
 			}
 
 			question := cCtx.Args().Get(0)
-			response, err := actions.Question(question, key, model)
+			response, err := actions.Question(question, settings)
 			if err != nil {
 				return err
 			}

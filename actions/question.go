@@ -1,10 +1,9 @@
 package actions
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"jarbas-go/main/model"
+	"jarbas-go/main/vendors/openai"
 )
 
 type Answer struct {
@@ -36,15 +35,15 @@ func validateResponse(response interface{}) (string, error) {
 	return fmt.Sprint(response), nil
 }
 
-func Question(input string, apiKey string, model string) (string, error) {
+func Question(input string, settings model.Settings) (string, error) {
 	// Define the request body as a JSON object
 	body := map[string]interface{}{
-		"model": model,
+		"model": settings.Model,
 		"messages": []map[string]string{
 			{"role": "user", "content": input},
 		},
 	}
-	respData, err := request(body, apiKey)
+	respData, err := openai.DoRequest(body, settings.ApiKey)
 	if err != nil {
 		return "", err
 	}
@@ -59,7 +58,7 @@ func Question(input string, apiKey string, model string) (string, error) {
 	return text, nil
 }
 
-func ChatQuestion(messages []map[string]interface{}, question string, apiKey string, model string) (Answer, error) {
+func ChatQuestion(messages []map[string]interface{}, question string, settings model.Settings) (Answer, error) {
 	newQuestion := map[string]interface{}{
 		"role": "user", "content": question,
 	}
@@ -68,10 +67,10 @@ func ChatQuestion(messages []map[string]interface{}, question string, apiKey str
 
 	// Define the request body as a JSON object
 	body := map[string]interface{}{
-		"model":    model,
+		"model":    settings.Model,
 		"messages": finalMessage,
 	}
-	respData, err := request(body, apiKey)
+	respData, err := openai.DoRequest(body, settings.ApiKey)
 	if err != nil {
 		return Answer{}, err
 	}
@@ -92,37 +91,4 @@ func ChatQuestion(messages []map[string]interface{}, question string, apiKey str
 	}
 
 	return answer, nil
-}
-
-func request(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
-	// Convert the request body to JSON
-	jsonData, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create an HTTP request with the necessary headers
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	// Send the HTTP request and read the response
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// Read the response body as a string
-	var respData map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&respData)
-	if err != nil {
-		return nil, err
-	}
-
-	return respData, nil
 }

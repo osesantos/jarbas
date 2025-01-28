@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"jarbas-go/main/actions"
+	"jarbas-go/main/model"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -17,7 +18,7 @@ const (
 	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 )
 
-func Chat(apKey string, model string, saveMessages bool, messages []map[string]interface{}) error {
+func Chat(settings model.Settings, messages []map[string]interface{}) error {
 	if messages == nil {
 		messages = []map[string]interface{}{}
 	}
@@ -49,7 +50,7 @@ func Chat(apKey string, model string, saveMessages bool, messages []map[string]i
 				fmt.Println("\u001B[1;31mtoken information deactivated!\u001B[0m")
 			}
 		} else {
-			answer, err := actions.ChatQuestion(messages, input, apKey, model)
+			answer, err := actions.ChatQuestion(messages, input, settings)
 			if err != nil {
 				return err
 			}
@@ -63,7 +64,7 @@ func Chat(apKey string, model string, saveMessages bool, messages []map[string]i
 		}
 	}
 
-	if saveMessages {
+	if settings.SaveMessages {
 		err := SaveConversation(messages)
 		if err != nil {
 			return err
@@ -73,7 +74,7 @@ func Chat(apKey string, model string, saveMessages bool, messages []map[string]i
 	return nil
 }
 
-func ContinueChat(apKey string, model string, saveMessages bool) error {
+func ContinueChat(settings model.Settings) error {
 	file, err := _listConversations()
 	if err != nil {
 		return err
@@ -85,7 +86,7 @@ func ContinueChat(apKey string, model string, saveMessages bool) error {
 		return err
 	}
 
-	err = Chat(apKey, model, saveMessages, messages)
+	err = Chat(settings, messages)
 	if err != nil {
 		return err
 	}
