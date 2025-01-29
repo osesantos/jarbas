@@ -6,8 +6,10 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 ## TODO:
 - [x] Give the option to save all the chat messages in a .jarbas folder located in the home dir (filename = guid.txt) the file will contain the response from the api will all the messages.
 - [x] Give the option to open the list of convesations and select one of them to continue.
-- [ ] Add the possibility to use claude api
-- [ ] Improve agentic capabilities, by adding the possibility to scrape the web in realtime.
+- [x] Add the possibility to use claude api
+- [x] Add the possibility to use the openai api
+- [ ] Improve agentic capabilities, by adding the possibility to scrape the web in real time.
+- [ ] Allow the user to select the api to use
 
 ## Chat mode
 
