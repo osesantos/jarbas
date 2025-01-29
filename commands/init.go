@@ -17,6 +17,12 @@ func Init() {
 
 	path := filepath.Join(homeDir, utils.ConfigFile)
 
+	// if the file already exists, and is not empty, do not overwrite it
+	if utils.FileExists(path) && utils.FileNotEmpty(path) {
+		fmt.Println("File already exists and is not empty!")
+		return
+	}
+
 	f, err := os.OpenFile(path, os.O_WRONLY, 0o644)
 	if os.IsNotExist(err) {
 		f, err = os.Create(path)
@@ -43,6 +49,16 @@ func Init() {
 		fmt.Println(err)
 	}
 
+	err = _writeVendor(f)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = f.Sync()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fmt.Println("File " + f.Name() + " created!")
 }
 
@@ -55,7 +71,7 @@ func _writeKey(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.ApiKey), key))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.ApiKey)+": ", key))
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -72,7 +88,7 @@ func _writeModel(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Model), modelValue))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Model)+": ", modelValue))
 	if err != nil {
 		return err
 	}
@@ -88,23 +104,7 @@ func _writeSaveMessages(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.SaveMessages), save))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func _writeApiUrl(f *os.File) error {
-	fmt.Println("What's the API URL: ")
-	// Read input from the user
-	apiUrl := ""
-	_, err := fmt.Scanln(&apiUrl)
-	if err != nil {
-		return err
-	}
-
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.ApiURL), apiUrl))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.SaveMessages)+": ", save))
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func _writeVendor(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Vendor), vendor))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Vendor)+": ", vendor))
 	if err != nil {
 		return err
 	}

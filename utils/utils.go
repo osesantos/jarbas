@@ -26,3 +26,17 @@ func GetSettingsFile() (*os.File, error) {
 
 	return file, nil
 }
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
+func FileNotEmpty(path string) bool {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	return fi.Size() > 0
+}

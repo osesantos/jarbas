@@ -2,6 +2,7 @@ package model
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"jarbas-go/main/utils"
 	"reflect"
@@ -9,35 +10,21 @@ import (
 )
 
 const (
-	ApiKey         = "ApiKey"
-	ApiURL         = "ApiURL"
-	RequestHeaders = "RequestHeaders"
-	Model          = "Model"
-	Vendor         = "Vendor"
-	SaveMessages   = "SaveMessages"
+	ApiKey       = "ApiKey"
+	Model        = "Model"
+	Vendor       = "Vendor"
+	SaveMessages = "SaveMessages"
 )
 
 type Settings struct {
-	ApiKey         string            `json:"api_key"`
-	ApiURL         string            `json:"api_url"`
-	RequestHeaders map[string]string `json:"request_headers"`
-	Model          string            `json:"model"`
-	Vendor         string            `json:"vendor"`
-	SaveMessages   bool              `json:"save_messages"`
+	ApiKey       string `json:"api_key"`
+	Model        string `json:"model"`
+	Vendor       string `json:"vendor"`
+	SaveMessages bool   `json:"save_messages"`
 }
 
 func GetSettings() (Settings, error) {
 	apiKey, err := GetKey()
-	if err != nil {
-		return Settings{}, err
-	}
-
-	apiURL, err := GetAPIUrl()
-	if err != nil {
-		return Settings{}, err
-	}
-
-	requestHeaders, err := GetRequestHeaders()
 	if err != nil {
 		return Settings{}, err
 	}
@@ -58,12 +45,10 @@ func GetSettings() (Settings, error) {
 	}
 
 	return Settings{
-		ApiKey:         apiKey,
-		ApiURL:         apiURL,
-		RequestHeaders: requestHeaders,
-		Model:          model,
-		Vendor:         vendor,
-		SaveMessages:   saveMessages,
+		ApiKey:       apiKey,
+		Model:        model,
+		Vendor:       vendor,
+		SaveMessages: saveMessages,
 	}, nil
 }
 
@@ -89,21 +74,17 @@ func GetKey() (string, error) {
 
 	defer file.Close()
 
-	// Create a new scanner to read the file
 	scanner := bufio.NewScanner(file)
 
-	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(ApiKey)) {
-			// Remove the "api-key: " prefix from the line
-			apiKey := strings.TrimPrefix(line, GetJsonKey(ApiKey))
+			apiKey := strings.TrimPrefix(line, GetJsonKey(ApiKey)+": ")
 			return apiKey, nil
 		}
 	}
 
-	// Return an error if the file is empty
-	return "", bufio.ErrFinalToken
+	return "", errors.New("api key not found")
 }
 
 func GetModel() (string, error) {
@@ -114,21 +95,17 @@ func GetModel() (string, error) {
 
 	defer file.Close()
 
-	// Create a new scanner to read the file
 	scanner := bufio.NewScanner(file)
 
-	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(Model)) {
-			// Remove the "api-key: " prefix from the line
-			apiKey := strings.TrimPrefix(line, GetJsonKey(Model))
+			apiKey := strings.TrimPrefix(line, GetJsonKey(Model)+": ")
 			return apiKey, nil
 		}
 	}
 
-	// Return an error if the file is empty
-	return "", bufio.ErrFinalToken
+	return "", errors.New("model not found")
 }
 
 func GetSaveMessages() (bool, error) {
@@ -139,14 +116,12 @@ func GetSaveMessages() (bool, error) {
 
 	defer file.Close()
 
-	// Create a new scanner to read the file
 	scanner := bufio.NewScanner(file)
 
-	// Read the first line of the file
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(SaveMessages)) {
-			option := strings.TrimPrefix(line, GetJsonKey(SaveMessages))
+			option := strings.TrimPrefix(line, GetJsonKey(SaveMessages)+": ")
 
 			if option == "n" {
 				return false, nil
@@ -160,62 +135,7 @@ func GetSaveMessages() (bool, error) {
 		}
 	}
 
-	// Return an error if the file is empty
-	return false, bufio.ErrFinalToken
-}
-
-func GetAPIUrl() (string, error) {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return "", err
-	}
-
-	defer file.Close()
-
-	// Create a new scanner to read the file
-	scanner := bufio.NewScanner(file)
-
-	// Read the first line of the file
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, GetJsonKey(ApiURL)) {
-			return strings.TrimPrefix(line, GetJsonKey(ApiURL)), nil
-		}
-	}
-
-	// Return an error if the file is empty
-	return "", bufio.ErrFinalToken
-}
-
-func GetRequestHeaders() (map[string]string, error) {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return nil, err
-	}
-
-	defer file.Close()
-
-	// Create a new scanner to read the file
-	scanner := bufio.NewScanner(file)
-
-	headers := map[string]string{}
-
-	// Read the first line of the file
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, GetJsonKey(RequestHeaders)) {
-			headersLine := strings.TrimPrefix(line, GetJsonKey(RequestHeaders))
-			headersList := strings.Split(headersLine, ",")
-			for _, header := range headersList {
-				headerParts := strings.Split(header, ":")
-				headers[headerParts[0]] = headerParts[1]
-			}
-			return headers, nil
-		}
-	}
-
-	// Return an error if the file is empty
-	return nil, bufio.ErrFinalToken
+	return false, errors.New("save messages not found")
 }
 
 func GetVendor() (string, error) {
@@ -233,10 +153,10 @@ func GetVendor() (string, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(Vendor)) {
-			return strings.TrimPrefix(line, GetJsonKey(Vendor)), nil
+			return strings.TrimPrefix(line, GetJsonKey(Vendor)+": "), nil
 		}
 	}
 
 	// Return an error if the file is empty
-	return "", bufio.ErrFinalToken
+	return "", errors.New("vendor not found")
 }

@@ -75,7 +75,7 @@ func main() {
 				return err
 			}
 
-			question := cCtx.Args().Get(0)
+			question := cCtx.Args().Get(1)
 			response, err := actions.SingleQuestion(question, settings)
 			if err != nil {
 				return err
