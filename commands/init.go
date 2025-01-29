@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 )
 
+// TODO: use form package to get the input from the user
+
 func Init() {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

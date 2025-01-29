@@ -27,6 +27,7 @@ func DoSingleQuestion(input string, settings model.Settings) (string, error) {
 		return response, err
 	}
 
+	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
 	text := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
 
 	return text, nil
@@ -49,9 +50,11 @@ func DoChatQuestion(messages []map[string]interface{}, question string, settings
 		return model.Answer{}, err
 	}
 
+	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
 	lastMessage := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
 	messagesRequest := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})
 
+	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
 	promptTokens := respData["usage"].(map[string]interface{})["prompt_tokens"]
 	completionTokens := respData["usage"].(map[string]interface{})["completion_tokens"]
 	totalTokens := respData["usage"].(map[string]interface{})["total_tokens"]
