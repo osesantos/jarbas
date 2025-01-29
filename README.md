@@ -1,3 +1,5 @@
+[![Go](https://github.com/osesantos/jarbas/actions/workflows/go.yml/badge.svg)](https://github.com/osesantos/jarbas/actions/workflows/go.yml)
+
 # jarbas
 jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 
