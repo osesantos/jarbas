@@ -3,10 +3,71 @@ package openai
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"jarbas-go/main/model"
 	"net/http"
 )
 
-func DoRequest(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
+func DoSingleQuestion(input string, settings model.Settings) (string, error) {
+	// Define the request body as a JSON object
+	body := map[string]interface{}{
+		"model": settings.Model,
+		"messages": []map[string]string{
+			{"role": "user", "content": input},
+		},
+	}
+
+	respData, err := _doRequest(body, settings.ApiKey)
+	if err != nil {
+		return "", err
+	}
+
+	response, err := _validateResponse(respData["choices"])
+	if err != nil {
+		return response, err
+	}
+
+	text := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
+
+	return text, nil
+}
+
+func DoChatQuestion(messages []map[string]interface{}, question string, settings model.Settings) (model.Answer, error) {
+	newQuestion := map[string]interface{}{
+		"role": "user", "content": question,
+	}
+
+	finalMessage := append(messages, newQuestion)
+
+	// Define the request body as a JSON object
+	body := map[string]interface{}{
+		"model":    settings.Model,
+		"messages": finalMessage,
+	}
+	respData, err := _doRequest(body, settings.ApiKey)
+	if err != nil {
+		return model.Answer{}, err
+	}
+
+	lastMessage := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
+	messagesRequest := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})
+
+	promptTokens := respData["usage"].(map[string]interface{})["prompt_tokens"]
+	completionTokens := respData["usage"].(map[string]interface{})["completion_tokens"]
+	totalTokens := respData["usage"].(map[string]interface{})["total_tokens"]
+
+	answer := model.Answer{
+		PreviousMessages: append(finalMessage, messagesRequest),
+		LastMessage:      lastMessage,
+		PromptToken:      fmt.Sprint(promptTokens),
+		CompletionToken:  fmt.Sprint(completionTokens),
+		TotalToken:       fmt.Sprint(totalTokens),
+	}
+
+	return answer, nil
+}
+
+func _doRequest(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
 	// Convert the request body to JSON
 	jsonData, err := json.Marshal(body)
 	if err != nil {
@@ -37,4 +98,20 @@ func DoRequest(body map[string]interface{}, apiKey string) (map[string]interface
 	}
 
 	return respData, nil
+}
+
+func _validateResponse(response interface{}) (string, error) {
+	if response == nil {
+		return "", fmt.Errorf("response is nil")
+	}
+
+	if response == "" {
+		return "", fmt.Errorf("response is empty")
+	}
+
+	if response.([]interface{})[0] == nil {
+		return response.(string), fmt.Errorf("response is not the expected type")
+	}
+
+	return fmt.Sprint(response), nil
 }
