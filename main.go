@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"jarbas-go/main/actions"
+	"jarbas-go/main/agents"
 	"jarbas-go/main/commands"
 	"jarbas-go/main/model"
 
@@ -54,6 +55,23 @@ func main() {
 					}
 
 					err = commands.ContinueChat(settings)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
+			{
+				Name:    "agent",
+				Aliases: []string{"a"},
+				Usage:   "Run an agent",
+				Action: func(cCtx *cli.Context) error {
+					settings, err := model.GetSettings()
+					if err != nil {
+						return err
+					}
+
+					err = agents.RunAgent("", settings)
 					if err != nil {
 						return err
 					}

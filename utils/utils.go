@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
+	"time"
 )
 
 const ConfigFile = "/.jarbasrc"
@@ -39,4 +42,34 @@ func FileNotEmpty(path string) bool {
 	}
 
 	return fi.Size() > 0
+}
+
+func OrderFilesByTime(files []string) []string {
+	// File format: <uuid>-<timestamp>.json
+	// sort by timestamp
+	sort.Slice(files, func(i, j int) bool {
+		timeString := strings.Split(files[i], "-")[1]
+		timeString = strings.Replace(timeString, ".json", "", 1)
+
+		fmt.Println("Parsing: " + timeString)
+		iTime, err := time.Parse(time.RFC3339, timeString)
+		if err != nil {
+			fmt.Println(err)
+			return false
+		}
+
+		timeString = strings.Split(files[j], "-")[1]
+		timeString = strings.Replace(timeString, ".json", "", 1)
+
+		fmt.Println("Parsing: " + timeString)
+		jTime, err := time.Parse(time.RFC3339, timeString)
+		if err != nil {
+			fmt.Println(err)
+			return false
+		}
+
+		return iTime.Before(jTime)
+	})
+
+	return files
 }

@@ -8,6 +8,7 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/model"
+	"jarbas-go/main/utils"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -130,6 +131,11 @@ func _listConversations() (string, error) {
 		Suggest: func(toComplete string) []string {
 			dir := GetCacheDir()
 			files, _ := filepath.Glob(dir + "/" + toComplete + "*")
+
+			files = utils.OrderFilesByTime(files)
+
+			fmt.Println("ordered files:\n", files)
+
 			return files
 		},
 	}
