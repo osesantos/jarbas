@@ -10,6 +10,8 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Give the option to open the list of convesations and select one of them to continue.
 - [x] Add the possibility to use claude api
 - [x] Add the possibility to use the openai api
+- [ ] Take the local list of conversations and show them in the chat
+- [ ] take the local list of conversations and show them as a chat history without the need to open the chat
 - [ ] Add agents concepts to the chat, so that the user can select the agent to use.
 - [ ] Improve agent capabilities, by adding the possibility to scrape the web in real time, get an article and summarize it.
 - [ ] Allow the user to select the api to use
