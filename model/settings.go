@@ -4,20 +4,21 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"jarbas-go/main/utils"
 	"reflect"
 	"strings"
+
+	"jarbas-go/main/utils"
 )
 
 const (
-	ApiKey       = "ApiKey"
+	APIKey       = "APIKey"
 	Model        = "Model"
 	Vendor       = "Vendor"
 	SaveMessages = "SaveMessages"
 )
 
 type Settings struct {
-	ApiKey       string `json:"api_key"`
+	APIKey       string `json:"api_key"`
 	Model        string `json:"model"`
 	Vendor       string `json:"vendor"`
 	SaveMessages bool   `json:"save_messages"`
@@ -45,7 +46,7 @@ func GetSettings() (Settings, error) {
 	}
 
 	return Settings{
-		ApiKey:       apiKey,
+		APIKey:       apiKey,
 		Model:        model,
 		Vendor:       vendor,
 		SaveMessages: saveMessages,
@@ -78,8 +79,8 @@ func GetKey() (string, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.Contains(line, GetJsonKey(ApiKey)) {
-			apiKey := strings.TrimPrefix(line, GetJsonKey(ApiKey)+": ")
+		if strings.Contains(line, GetJsonKey(APIKey)) {
+			apiKey := strings.TrimPrefix(line, GetJsonKey(APIKey)+": ")
 			return apiKey, nil
 		}
 	}

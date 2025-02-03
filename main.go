@@ -9,6 +9,7 @@ import (
 	"jarbas-go/main/agents"
 	"jarbas-go/main/commands"
 	"jarbas-go/main/model"
+	"jarbas-go/main/vendors"
 
 	"github.com/urfave/cli/v2"
 )
@@ -94,7 +95,7 @@ func main() {
 			}
 
 			question := cCtx.Args().Get(1)
-			response, err := actions.SingleQuestion(question, settings)
+			response, err := actions.SingleQuestion(question, settings, vendors.SoftwareEngineer())
 			if err != nil {
 				return err
 			}

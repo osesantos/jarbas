@@ -2,10 +2,11 @@ package commands
 
 import (
 	"fmt"
-	"jarbas-go/main/model"
-	"jarbas-go/main/utils"
 	"os"
 	"path/filepath"
+
+	"jarbas-go/main/model"
+	"jarbas-go/main/utils"
 )
 
 // TODO: use form package to get the input from the user
@@ -73,7 +74,7 @@ func _writeKey(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.ApiKey)+": ", key))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.APIKey)+": ", key))
 	if err != nil {
 		fmt.Println(err)
 		return err

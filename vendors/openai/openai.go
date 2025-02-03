@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"jarbas-go/main/model"
 	"net/http"
+
+	"jarbas-go/main/model"
 )
 
 func DoSingleQuestion(input string, settings model.Settings) (string, error) {
@@ -17,7 +18,7 @@ func DoSingleQuestion(input string, settings model.Settings) (string, error) {
 		},
 	}
 
-	respData, err := _doRequest(body, settings.ApiKey)
+	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
 		return "", err
 	}
@@ -45,7 +46,7 @@ func DoChatQuestion(messages []map[string]interface{}, question string, settings
 		"model":    settings.Model,
 		"messages": finalMessage,
 	}
-	respData, err := _doRequest(body, settings.ApiKey)
+	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
 		return model.Answer{}, err
 	}

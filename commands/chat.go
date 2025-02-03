@@ -9,6 +9,7 @@ import (
 	"jarbas-go/main/actions"
 	"jarbas-go/main/model"
 	"jarbas-go/main/utils"
+	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -27,6 +28,7 @@ func Chat(settings model.Settings, messages []map[string]interface{}) error {
 	fmt.Println("Welcome to the chat! Write 'exit' or press Ctrl-C to close the chat.")
 	fmt.Println("Write 'token' to activate and deactivate token information.")
 	fmt.Println("Write 'editor' to open an editor to write your question.")
+	fmt.Println("Write 'previous' to see previous chat messages.")
 	fmt.Println("")
 
 	withToken := false
@@ -51,7 +53,7 @@ func Chat(settings model.Settings, messages []map[string]interface{}) error {
 				fmt.Println("\u001B[1;31mtoken information deactivated!\u001B[0m")
 			}
 		} else {
-			answer, err := actions.ChatQuestion(messages, input, settings)
+			answer, err := actions.ChatQuestion(messages, input, settings, vendors.SoftwareEngineer())
 			if err != nil {
 				return err
 			}

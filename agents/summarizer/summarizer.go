@@ -2,10 +2,12 @@ package summarizer
 
 import (
 	"fmt"
+
 	"jarbas-go/main/actions"
 	"jarbas-go/main/commands"
 	"jarbas-go/main/model"
 	"jarbas-go/main/utils"
+	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
 )
@@ -22,7 +24,7 @@ func _prompt(scrapedText string) string {
 		%s`, scrapedText)
 }
 
-func _getUrl() (string, error) {
+func _getURL() (string, error) {
 	question := ""
 	prompt := &survey.Input{
 		Message: "url to summarize: ",
@@ -36,7 +38,7 @@ func _getUrl() (string, error) {
 }
 
 func GetOptions() (Options, error) {
-	url, err := _getUrl()
+	url, err := _getURL()
 	if err != nil {
 		return Options{}, err
 	}
@@ -54,7 +56,7 @@ func Run(options Options, settings model.Settings) error {
 
 	prompt := _prompt(scarpedText)
 
-	response, err := actions.SingleQuestion(prompt, settings)
+	response, err := actions.SingleQuestion(prompt, settings, vendors.ProfessionalWriter())
 	if err != nil {
 		return err
 	}
