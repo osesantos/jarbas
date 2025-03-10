@@ -44,5 +44,5 @@ $ ./main "QUESTION"
 
 Note: create a link on to the `main` so that it will be accessible anywhere
 ```bash
-$ ln main /usr/local/bin/jarbas
+$ sudo ln -s $HOME/git/jarbas/main /usr/local/bin/jarbas
 ```
