@@ -16,8 +16,9 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "Jarbas",
-		Usage: "A chatGPT cli implementation that uses API to have the ChatGPT to get help on the terminal",
+		Name:    "Jarbas",
+		Usage:   "A chatGPT cli implementation that uses API to have the ChatGPT to get help on the terminal",
+		Version: "0.1.0",
 		Commands: []*cli.Command{
 			{
 				Name:    "init",
