@@ -6,6 +6,8 @@ toolchain go1.23.5
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
+	github.com/gocolly/colly v1.2.0
+	github.com/google/uuid v1.6.0
 	github.com/urfave/cli/v2 v2.25.0
 )
 
@@ -17,10 +19,8 @@ require (
 	github.com/antchfx/xpath v1.3.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gocolly/colly v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
