@@ -12,6 +12,10 @@ type Response struct {
 }
 
 func ParseResponse(respData map[string]interface{}) (Response, error) {
+	if _, ok := respData["content"]; !ok {
+		return Response{}, fmt.Errorf("response does not contain content")
+	}
+
 	responseType, ok := respData["content"].([]interface{})[0].(map[string]interface{})["type"].(string)
 	if !ok {
 		return Response{}, fmt.Errorf("failed to parse response type")
