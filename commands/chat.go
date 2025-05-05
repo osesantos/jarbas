@@ -20,18 +20,21 @@ const (
 	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 )
 
-func Chat(settings model.Settings, messages []map[string]interface{}) error {
+func Chat(settings model.Settings, messages []map[string]any) error {
 	if messages == nil {
-		messages = []map[string]interface{}{}
+		messages = []map[string]any{}
 	}
 
 	fmt.Println("Welcome to the chat! Write 'exit' or press Ctrl-C to close the chat.")
 	fmt.Println("Write 'token' to activate and deactivate token information.")
 	fmt.Println("Write 'editor' to open an editor to write your question.")
 	fmt.Println("Write 'previous' to see previous chat messages.")
+	fmt.Println("Write 'role' to change the role of the assistant.")
 	fmt.Println("")
 
 	withToken := false
+	role := model.CloudEngineer
+	systemPrompt := ""
 	for {
 		input, err := _getInput()
 		if err != nil || input == "exit" {
@@ -45,6 +48,19 @@ func Chat(settings model.Settings, messages []map[string]interface{}) error {
 			}
 		}
 
+		if input == "role" {
+			fmt.Println("\u001B[1;32mcurrent role is: " + role + "\u001B[0m")
+			role, err = _listRoles()
+			if err != nil {
+				return err
+			}
+			messages = append(messages, map[string]any{
+				"role":    "system",
+				"content": vendors.MapToSystemPrompt(role),
+			})
+			continue
+		}
+
 		if input == "token" {
 			withToken = !withToken
 			if withToken {
@@ -53,7 +69,8 @@ func Chat(settings model.Settings, messages []map[string]interface{}) error {
 				fmt.Println("\u001B[1;31mtoken information deactivated!\u001B[0m")
 			}
 		} else {
-			answer, err := actions.ChatQuestion(messages, input, settings, vendors.SoftwareEngineer())
+			systemPrompt = vendors.MapToSystemPrompt(role)
+			answer, err := actions.ChatQuestion(messages, input, settings, systemPrompt)
 			if err != nil {
 				return err
 			}
@@ -95,6 +112,26 @@ func ContinueChat(settings model.Settings) error {
 	}
 
 	return nil
+}
+
+func _listRoles() (string, error) {
+	roles := []string{
+		model.SoftwareEngineer,
+		model.CloudEngineer,
+		model.Writer,
+	}
+
+	role := ""
+	prompt := &survey.Select{
+		Message: "Select a role:",
+		Options: roles,
+	}
+	err := survey.AskOne(prompt, &role)
+	if err != nil {
+		return "", err
+	}
+
+	return role, nil
 }
 
 func _getInput() (string, error) {

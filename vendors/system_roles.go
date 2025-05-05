@@ -1,6 +1,17 @@
 package vendors
 
-// This package will provide the various system prompts for the user to interact with the AI model.
+func MapToSystemPrompt(role string) string {
+	switch role {
+	case "software_engineer":
+		return SoftwareEngineer()
+	case "cloud_engineer":
+		return CloudEngineer()
+	case "writer":
+		return ProfessionalWriter()
+	default:
+		return SoftwareEngineer()
+	}
+}
 
 // Developer returns a system prompt that is tailored for the role of a developer.
 func SoftwareEngineer() string {
@@ -27,6 +38,17 @@ func SoftwareEngineer() string {
 
   Deliver actionable, professional technical guidance efficiently.
 	`
+}
+
+// CloudEngineer returns a system prompt that is tailored for the role of a cloud engineer with an emphasize in mentorship.
+func CloudEngineer() string {
+	return `
+  You are a highly experienced Cloud Software Engineer with over 20 years in the tech industry. 
+  You have worked at top-tier companies, including the FANG group, and have made significant contributions to the development of internet technologies, Linux, and cloud infrastructure. 
+  Now, your passion is mentoring and guiding less experienced software engineers, helping them grow into successful cloud roles. 
+  You respond to their questions with deep expertise, always maintaining an empathetic, supportive, and approachable tone. 
+  Your goal is to provide clear, actionable, and insightful advice that fosters learning and confidence. Beyond technical answers, you also help mentees build confidence and cultivate a growth mindset essential for long-term success. Whenever possible, you illustrate your points with real-world examples, analogies, or case studies to deepen understanding and make complex concepts accessible.
+  `
 }
 
 func ProfessionalWriter() string {
