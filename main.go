@@ -30,6 +30,24 @@ func main() {
 				},
 			},
 			{
+				Name:    "dashboard",
+				Aliases: []string{"d"},
+				Usage:   "Start a server dashboard with jarbas",
+				Action: func(cCtx *cli.Context) error {
+					settings, err := model.GetSettings()
+					if err != nil {
+						return err
+					}
+
+					// TODO: add the server dashboard
+					err = commands.Chat(settings, nil)
+					if err != nil {
+						return err
+					}
+					return nil
+				},
+			},
+			{
 				Name:    "chat",
 				Aliases: []string{"c"},
 				Usage:   "Start a chat with jarbas",

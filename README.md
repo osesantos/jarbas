@@ -10,13 +10,17 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Give the option to open the list of convesations and select one of them to continue.
 - [x] Add the possibility to use claude api
 - [x] Add the possibility to use the openai api
-- [ ] Take the local list of conversations and show them in the chat
-- [ ] take the local list of conversations and show them as a chat history without the need to open the chat
-- [ ] Add agents concepts to the chat, so that the user can select the agent to use.
+- [x] Take the local list of conversations and show them in the chat
+- [x] take the local list of conversations and show them as a chat history without the need to open the chat
+- [x] Add agents concepts to the chat, so that the user can select the agent to use.
 - [x] Improve agent capabilities, by adding the possibility to scrape the web in real time, get an article and summarize it.
-- [ ] Allow the user to select the api to use
-- [ ] Add Mistral - le chat api
 - [ ] Add the http://github/osesantos/resulto package to improve the error handling
+- [ ] Add the dashboard server to the project, so that the user can see the conversations in a web interface and change settings via dashboard.
+- [ ] Add docker container via docker-compose
+- [ ] Add database to store the conversations and the settings - PostgresSQL
+- [ ] Break the server into microservices, backend and frontend
+- [ ] Add kubernetes deployment
+- [ ] Add support for ollama - https://ollama.com/ - running in local cluster
 
 ## Chat mode
 
