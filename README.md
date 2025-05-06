@@ -16,6 +16,7 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Improve agent capabilities, by adding the possibility to scrape the web in real time, get an article and summarize it.
 - [ ] Add the http://github/osesantos/resulto package to improve the error handling
 - [ ] Add the dashboard server to the project, so that the user can see the conversations in a web interface and change settings via dashboard.
+- [ ] Add the possibility to change the system prompt in the dashboard
 - [ ] Add docker container via docker-compose
 - [ ] Add database to store the conversations and the settings - PostgresSQL
 - [ ] Break the server into microservices, backend and frontend

@@ -91,7 +91,7 @@ func main() {
 						return err
 					}
 
-					err = agents.RunAgent("", settings)
+					err = agents.RunAgent("", settings).UnwrapErr()
 					if err != nil {
 						return err
 					}

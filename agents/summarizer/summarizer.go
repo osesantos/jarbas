@@ -10,6 +10,7 @@ import (
 	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/osesantos/resulto"
 )
 
 type Options struct {
@@ -48,20 +49,20 @@ func GetOptions() (Options, error) {
 	}, nil
 }
 
-func Run(options Options, settings model.Settings) error {
+func Run(options Options, settings model.Settings) resulto.ResultAny {
 	scarpedText, err := utils.ScrapeText(options.URL)
 	if err != nil {
-		return err
+		return resulto.FailureAny(err)
 	}
 
 	prompt := _prompt(scarpedText)
 
 	response, err := actions.SingleQuestion(prompt, settings, vendors.ProfessionalWriter())
 	if err != nil {
-		return err
+		return resulto.FailureAny(err)
 	}
 
 	fmt.Println(commands.DefaultPrompt + response)
 
-	return nil
+	return resulto.SuccessAny()
 }

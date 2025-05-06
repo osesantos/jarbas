@@ -1,8 +1,8 @@
 module jarbas-go/main
 
-go 1.23
+go 1.23.6
 
-toolchain go1.23.5
+toolchain go1.24.1
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
@@ -26,6 +26,7 @@ require (
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/osesantos/resulto v1.1.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect

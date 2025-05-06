@@ -5,6 +5,7 @@ import (
 	"jarbas-go/main/model"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/osesantos/resulto"
 )
 
 type AgentType string
@@ -31,28 +32,28 @@ func (a AgentType) String() string {
 	return string(a)
 }
 
-func RunAgent(agent string, settings model.Settings) error {
+func RunAgent(agent string, settings model.Settings) resulto.Result[any] {
 	if agent == "" {
-		agent, _ = SelectAgent()
+		agent = SelectAgent().Unwrap()
 	}
 
 	if agent == Summarizer.String() {
 		options, err := summarizer.GetOptions()
 		if err != nil {
-			return err
+			return resulto.Failure[any](err)
 		}
 
 		return summarizer.Run(options, settings)
 	}
 
-	return nil
+	return resulto.SuccessAny()
 }
 
-func SelectAgent() (string, error) {
+func SelectAgent() resulto.Result[string] {
 	return _listAgents()
 }
 
-func _listAgents() (string, error) {
+func _listAgents() resulto.Result[string] {
 	agent := ""
 	prompt := &survey.Input{
 		Message: "agents:",
@@ -63,8 +64,8 @@ func _listAgents() (string, error) {
 	}
 	err := survey.AskOne(prompt, &agent)
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
-	return agent, nil
+	return resulto.Success(agent)
 }
