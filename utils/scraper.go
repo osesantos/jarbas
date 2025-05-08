@@ -5,9 +5,10 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
+	"github.com/osesantos/resulto"
 )
 
-func ScrapeText(url string) (string, error) {
+func ScrapeText(url string) resulto.Result[string] {
 	var extractedText strings.Builder
 
 	c := colly.NewCollector(
@@ -29,8 +30,8 @@ func ScrapeText(url string) (string, error) {
 
 	err := c.Visit(url)
 	if err != nil {
-		return "", errors.New("failed to scrape text: " + err.Error())
+		return resulto.Failure[string](errors.New("failed to scrape text: " + err.Error()))
 	}
 
-	return extractedText.String(), nil
+	return resulto.Success(extractedText.String())
 }

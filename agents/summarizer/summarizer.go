@@ -25,44 +25,32 @@ func _prompt(scrapedText string) string {
 		%s`, scrapedText)
 }
 
-func _getURL() (string, error) {
+func _getURL() resulto.Result[string] {
 	question := ""
 	prompt := &survey.Input{
 		Message: "url to summarize: ",
 	}
 	err := survey.AskOne(prompt, &question)
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
-	return question, nil
+	return resulto.Success(question)
 }
 
-func GetOptions() (Options, error) {
-	url, err := _getURL()
-	if err != nil {
-		return Options{}, err
-	}
+func GetOptions() Options {
+	url := _getURL().Unwrap()
 
 	return Options{
 		URL: url,
-	}, nil
+	}
 }
 
-func Run(options Options, settings settings.Settings) resulto.ResultAny {
-	scarpedText, err := utils.ScrapeText(options.URL)
-	if err != nil {
-		return resulto.FailureAny(err)
-	}
+func Run(options Options, settings settings.Settings) {
+	scarpedText := utils.ScrapeText(options.URL).Unwrap()
 
 	prompt := _prompt(scarpedText)
-
-	response, err := actions.SingleQuestion(prompt, settings, vendors.ProfessionalWriter())
-	if err != nil {
-		return resulto.FailureAny(err)
-	}
+	response := actions.SingleQuestion(prompt, settings, vendors.ProfessionalWriter())
 
 	fmt.Println(commands.DefaultPrompt + response)
-
-	return resulto.SuccessAny()
 }

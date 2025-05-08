@@ -70,10 +70,7 @@ func main() {
 				Usage:   "Run an agent",
 				Action: func(cCtx *cli.Context) error {
 					settings := settings.GetSettings()
-					err := agents.RunAgent("", settings).UnwrapErr()
-					if err != nil {
-						return err
-					}
+					agents.RunAgent("", settings)
 					return nil
 				},
 			},
@@ -89,10 +86,7 @@ func main() {
 		Action: func(cCtx *cli.Context) error {
 			settings := settings.GetSettings()
 			question := cCtx.Args().Get(1)
-			response, err := actions.SingleQuestion(question, settings, vendors.SoftwareEngineer())
-			if err != nil {
-				return err
-			}
+			response := actions.SingleQuestion(question, settings, vendors.SoftwareEngineer())
 			fmt.Println(commands.QuestionPrompt + question)
 			fmt.Println(commands.DefaultPrompt + response)
 			return nil

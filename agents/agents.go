@@ -32,21 +32,14 @@ func (a AgentType) String() string {
 	return string(a)
 }
 
-func RunAgent(agent string, settings settings.Settings) resulto.Result[any] {
+func RunAgent(agent string, settings settings.Settings) {
 	if agent == "" {
 		agent = SelectAgent().Unwrap()
 	}
 
 	if agent == Summarizer.String() {
-		options, err := summarizer.GetOptions()
-		if err != nil {
-			return resulto.Failure[any](err)
-		}
-
-		return summarizer.Run(options, settings)
+		summarizer.Run(summarizer.GetOptions(), settings)
 	}
-
-	return resulto.SuccessAny()
 }
 
 func SelectAgent() resulto.Result[string] {

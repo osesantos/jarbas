@@ -17,23 +17,23 @@ const (
 	maxTokens = 1024
 )
 
-func DoSingleQuestion(input string, settings settings.Settings, system string) (string, error) {
-	body := _getBody(settings.Model, []map[string]interface{}{{
+func DoSingleQuestion(input string, settings settings.Settings, system string) resulto.Result[string] {
+	body := _getBody(settings.Model, []map[string]any{{
 		"role":    "user",
 		"content": input,
 	}}, system)
 
 	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
 	response, err := ParseResponse(respData)
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
-	return response.Content, nil
+	return resulto.Success(response.Content)
 }
 
 func DoChatQuestion(messages []map[string]any, question string, settings settings.Settings, system string) resulto.Result[model.Answer] {
