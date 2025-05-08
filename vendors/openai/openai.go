@@ -7,11 +7,14 @@ import (
 	"net/http"
 
 	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
+
+	"github.com/osesantos/resulto"
 )
 
-func DoSingleQuestion(input string, settings model.Settings) (string, error) {
+func DoSingleQuestion(input string, settings settings.Settings) resulto.Result[string] {
 	// Define the request body as a JSON object
-	body := map[string]interface{}{
+	body := map[string]any{
 		"model": settings.Model,
 		"messages": []map[string]string{
 			{"role": "user", "content": input},
@@ -20,45 +23,45 @@ func DoSingleQuestion(input string, settings model.Settings) (string, error) {
 
 	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
-	response, err := _validateResponse(respData["choices"])
+	_, err = _validateResponse(respData["choices"])
 	if err != nil {
-		return response, err
+		return resulto.Failure[string](err)
 	}
 
 	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
-	text := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
+	text := respData["choices"].([]any)[0].(map[string]any)["message"].(map[string]any)["content"].(string)
 
-	return text, nil
+	return resulto.Success(text)
 }
 
-func DoChatQuestion(messages []map[string]interface{}, question string, settings model.Settings) (model.Answer, error) {
-	newQuestion := map[string]interface{}{
+func DoChatQuestion(messages []map[string]any, question string, settings settings.Settings) resulto.Result[model.Answer] {
+	newQuestion := map[string]any{
 		"role": "user", "content": question,
 	}
 
 	finalMessage := append(messages, newQuestion)
 
 	// Define the request body as a JSON object
-	body := map[string]interface{}{
+	body := map[string]any{
 		"model":    settings.Model,
 		"messages": finalMessage,
 	}
 	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
-		return model.Answer{}, err
+		return resulto.Failure[model.Answer](err)
 	}
 
 	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
-	lastMessage := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
-	messagesRequest := respData["choices"].([]interface{})[0].(map[string]interface{})["message"].(map[string]interface{})
+	lastMessage := respData["choices"].([]any)[0].(map[string]any)["message"].(map[string]any)["content"].(string)
+	messagesRequest := respData["choices"].([]any)[0].(map[string]any)["message"].(map[string]any)
 
 	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
-	promptTokens := respData["usage"].(map[string]interface{})["prompt_tokens"]
-	completionTokens := respData["usage"].(map[string]interface{})["completion_tokens"]
-	totalTokens := respData["usage"].(map[string]interface{})["total_tokens"]
+	promptTokens := respData["usage"].(map[string]any)["prompt_tokens"]
+	completionTokens := respData["usage"].(map[string]any)["completion_tokens"]
+	totalTokens := respData["usage"].(map[string]any)["total_tokens"]
 
 	answer := model.Answer{
 		PreviousMessages: append(finalMessage, messagesRequest),
@@ -68,10 +71,10 @@ func DoChatQuestion(messages []map[string]interface{}, question string, settings
 		TotalToken:       fmt.Sprint(totalTokens),
 	}
 
-	return answer, nil
+	return resulto.Success(answer)
 }
 
-func _doRequest(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
+func _doRequest(body map[string]any, apiKey string) (map[string]any, error) {
 	// Convert the request body to JSON
 	jsonData, err := json.Marshal(body)
 	if err != nil {

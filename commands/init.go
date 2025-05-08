@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
 )
 
@@ -74,7 +74,7 @@ func _writeKey(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.APIKey)+": ", key))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", settings.GetJsonKey(settings.APIKey)+": ", key))
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -91,7 +91,7 @@ func _writeModel(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Model)+": ", modelValue))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", settings.GetJsonKey(settings.Model)+": ", modelValue))
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func _writeSaveMessages(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.SaveMessages)+": ", save))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", settings.GetJsonKey(settings.SaveMessages)+": ", save))
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func _writeVendor(f *os.File) error {
 		return err
 	}
 
-	_, err = f.WriteString(fmt.Sprintf("%s%s\n", model.GetJsonKey(model.Vendor)+": ", vendor))
+	_, err = f.WriteString(fmt.Sprintf("%s%s\n", settings.GetJsonKey(settings.Vendor)+": ", vendor))
 	if err != nil {
 		return err
 	}

@@ -8,6 +8,7 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
 	"jarbas-go/main/vendors"
 
@@ -20,7 +21,7 @@ const (
 	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 )
 
-func Chat(settings model.Settings, messages []map[string]any) error {
+func Chat(settings settings.Settings, messages []map[string]any) error {
 	if messages == nil {
 		messages = []map[string]any{}
 	}
@@ -70,11 +71,7 @@ func Chat(settings model.Settings, messages []map[string]any) error {
 			}
 		} else {
 			systemPrompt = vendors.MapToSystemPrompt(role)
-			answer, err := actions.ChatQuestion(messages, input, settings, systemPrompt)
-			if err != nil {
-				return err
-			}
-
+			answer := actions.ChatQuestion(messages, input, settings, systemPrompt)
 			messages = answer.PreviousMessages
 			if withToken {
 				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt + answer.LastMessage)
@@ -94,7 +91,7 @@ func Chat(settings model.Settings, messages []map[string]any) error {
 	return nil
 }
 
-func ContinueChat(settings model.Settings) error {
+func ContinueChat(settings settings.Settings) error {
 	file, err := _listConversations()
 	if err != nil {
 		return err

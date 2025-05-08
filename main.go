@@ -8,7 +8,7 @@ import (
 	"jarbas-go/main/actions"
 	"jarbas-go/main/agents"
 	"jarbas-go/main/commands"
-	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
 	"jarbas-go/main/vendors"
 
 	"github.com/urfave/cli/v2"
@@ -34,16 +34,7 @@ func main() {
 				Aliases: []string{"d"},
 				Usage:   "Start a server dashboard with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					settings, err := model.GetSettings()
-					if err != nil {
-						return err
-					}
-
-					// TODO: add the server dashboard
-					err = commands.Chat(settings, nil)
-					if err != nil {
-						return err
-					}
+					commands.Serve()
 					return nil
 				},
 			},
@@ -52,12 +43,8 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					settings, err := model.GetSettings()
-					if err != nil {
-						return err
-					}
-
-					err = commands.Chat(settings, nil)
+					settings := settings.GetSettings()
+					err := commands.Chat(settings, nil)
 					if err != nil {
 						return err
 					}
@@ -69,12 +56,8 @@ func main() {
 				Aliases: []string{"cc"},
 				Usage:   "Continue a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					settings, err := model.GetSettings()
-					if err != nil {
-						return err
-					}
-
-					err = commands.ContinueChat(settings)
+					settings := settings.GetSettings()
+					err := commands.ContinueChat(settings)
 					if err != nil {
 						return err
 					}
@@ -86,12 +69,8 @@ func main() {
 				Aliases: []string{"a"},
 				Usage:   "Run an agent",
 				Action: func(cCtx *cli.Context) error {
-					settings, err := model.GetSettings()
-					if err != nil {
-						return err
-					}
-
-					err = agents.RunAgent("", settings).UnwrapErr()
+					settings := settings.GetSettings()
+					err := agents.RunAgent("", settings).UnwrapErr()
 					if err != nil {
 						return err
 					}
@@ -108,11 +87,7 @@ func main() {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			settings, err := model.GetSettings()
-			if err != nil {
-				return err
-			}
-
+			settings := settings.GetSettings()
 			question := cCtx.Args().Get(1)
 			response, err := actions.SingleQuestion(question, settings, vendors.SoftwareEngineer())
 			if err != nil {

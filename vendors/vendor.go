@@ -1,8 +1,11 @@
 package vendors
 
-import "jarbas-go/main/model"
+import (
+	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
+)
 
 type Vendor interface {
-	DoSingleQuestion(input string, settings model.Settings) (string, error)
-	DoChatQuestion(messages []map[string]interface{}, question string, settings model.Settings) (model.Answer, error)
+	DoSingleQuestion(input string, settings settings.Settings) (string, error)
+	DoChatQuestion(messages []map[string]any, question string, settings settings.Settings) (model.Answer, error)
 }

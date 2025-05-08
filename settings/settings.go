@@ -1,4 +1,4 @@
-package model
+package settings
 
 import (
 	"bufio"
@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"jarbas-go/main/utils"
+
+	"github.com/osesantos/resulto"
 )
 
 const (
@@ -24,33 +26,13 @@ type Settings struct {
 	SaveMessages bool   `json:"save_messages"`
 }
 
-func GetSettings() (Settings, error) {
-	apiKey, err := GetKey()
-	if err != nil {
-		return Settings{}, err
-	}
-
-	model, err := GetModel()
-	if err != nil {
-		return Settings{}, err
-	}
-
-	vendor, err := GetVendor()
-	if err != nil {
-		return Settings{}, err
-	}
-
-	saveMessages, err := GetSaveMessages()
-	if err != nil {
-		return Settings{}, err
-	}
-
+func GetSettings() Settings {
 	return Settings{
-		APIKey:       apiKey,
-		Model:        model,
-		Vendor:       vendor,
-		SaveMessages: saveMessages,
-	}, nil
+		APIKey:       GetKey().Unwrap(),
+		Model:        GetModel().Unwrap(),
+		Vendor:       GetVendor().Unwrap(),
+		SaveMessages: GetSaveMessages().Unwrap(),
+	}
 }
 
 func GetJsonKey(fieldName string) string {
@@ -67,10 +49,10 @@ func GetJsonKey(fieldName string) string {
 	return jsonKey
 }
 
-func GetKey() (string, error) {
+func GetKey() resulto.Result[string] {
 	file, err := utils.GetSettingsFile()
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
 	defer file.Close()
@@ -81,17 +63,17 @@ func GetKey() (string, error) {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(APIKey)) {
 			apiKey := strings.TrimPrefix(line, GetJsonKey(APIKey)+": ")
-			return apiKey, nil
+			return resulto.Success(apiKey)
 		}
 	}
 
-	return "", errors.New("api key not found")
+	return resulto.Failure[string](errors.New("api key not found"))
 }
 
-func GetModel() (string, error) {
+func GetModel() resulto.Result[string] {
 	file, err := utils.GetSettingsFile()
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
 	defer file.Close()
@@ -102,17 +84,17 @@ func GetModel() (string, error) {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(Model)) {
 			apiKey := strings.TrimPrefix(line, GetJsonKey(Model)+": ")
-			return apiKey, nil
+			return resulto.Success(apiKey)
 		}
 	}
 
-	return "", errors.New("model not found")
+	return resulto.Failure[string](errors.New("model not found"))
 }
 
-func GetSaveMessages() (bool, error) {
+func GetSaveMessages() resulto.Result[bool] {
 	file, err := utils.GetSettingsFile()
 	if err != nil {
-		return false, err
+		return resulto.Failure[bool](err)
 	}
 
 	defer file.Close()
@@ -125,24 +107,24 @@ func GetSaveMessages() (bool, error) {
 			option := strings.TrimPrefix(line, GetJsonKey(SaveMessages)+": ")
 
 			if option == "n" {
-				return false, nil
+				return resulto.Success(false)
 			}
 
 			if option == "y" {
-				return true, nil
+				return resulto.Success(true)
 			}
 
-			return false, fmt.Errorf("invalid option: %s", option)
+			return resulto.Failure[bool](fmt.Errorf("invalid option: %s", option))
 		}
 	}
 
-	return false, errors.New("save messages not found")
+	return resulto.Failure[bool](errors.New("save messages not found"))
 }
 
-func GetVendor() (string, error) {
+func GetVendor() resulto.Result[string] {
 	file, err := utils.GetSettingsFile()
 	if err != nil {
-		return "", err
+		return resulto.Failure[string](err)
 	}
 
 	defer file.Close()
@@ -154,10 +136,10 @@ func GetVendor() (string, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, GetJsonKey(Vendor)) {
-			return strings.TrimPrefix(line, GetJsonKey(Vendor)+": "), nil
+			return resulto.Success(strings.TrimPrefix(line, GetJsonKey(Vendor)+": "))
 		}
 	}
 
 	// Return an error if the file is empty
-	return "", errors.New("vendor not found")
+	return resulto.Failure[string](errors.New("vendor not found"))
 }

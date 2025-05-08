@@ -5,7 +5,7 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/commands"
-	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
 	"jarbas-go/main/vendors"
 
@@ -49,7 +49,7 @@ func GetOptions() (Options, error) {
 	}, nil
 }
 
-func Run(options Options, settings model.Settings) resulto.ResultAny {
+func Run(options Options, settings settings.Settings) resulto.ResultAny {
 	scarpedText, err := utils.ScrapeText(options.URL)
 	if err != nil {
 		return resulto.FailureAny(err)

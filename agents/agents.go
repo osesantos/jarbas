@@ -2,7 +2,7 @@ package agents
 
 import (
 	"jarbas-go/main/agents/summarizer"
-	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/osesantos/resulto"
@@ -32,7 +32,7 @@ func (a AgentType) String() string {
 	return string(a)
 }
 
-func RunAgent(agent string, settings model.Settings) resulto.Result[any] {
+func RunAgent(agent string, settings settings.Settings) resulto.Result[any] {
 	if agent == "" {
 		agent = SelectAgent().Unwrap()
 	}

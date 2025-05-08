@@ -7,6 +7,9 @@ import (
 	"net/http"
 
 	"jarbas-go/main/model"
+	"jarbas-go/main/settings"
+
+	"github.com/osesantos/resulto"
 )
 
 const (
@@ -14,7 +17,7 @@ const (
 	maxTokens = 1024
 )
 
-func DoSingleQuestion(input string, settings model.Settings, system string) (string, error) {
+func DoSingleQuestion(input string, settings settings.Settings, system string) (string, error) {
 	body := _getBody(settings.Model, []map[string]interface{}{{
 		"role":    "user",
 		"content": input,
@@ -33,8 +36,8 @@ func DoSingleQuestion(input string, settings model.Settings, system string) (str
 	return response.Content, nil
 }
 
-func DoChatQuestion(messages []map[string]interface{}, question string, settings model.Settings, system string) (model.Answer, error) {
-	newQuestion := map[string]interface{}{
+func DoChatQuestion(messages []map[string]any, question string, settings settings.Settings, system string) resulto.Result[model.Answer] {
+	newQuestion := map[string]any{
 		"role": "user", "content": question,
 	}
 
@@ -43,12 +46,12 @@ func DoChatQuestion(messages []map[string]interface{}, question string, settings
 	body := _getBody(settings.Model, conversation, system)
 	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
-		return model.Answer{}, err
+		return resulto.Failure[model.Answer](err)
 	}
 
 	response, err := ParseResponse(respData)
 	if err != nil {
-		return model.Answer{}, err
+		return resulto.Failure[model.Answer](err)
 	}
 
 	answer := model.Answer{
@@ -59,11 +62,11 @@ func DoChatQuestion(messages []map[string]interface{}, question string, settings
 		TotalToken:       fmt.Sprint(response.TotalTokens),
 	}
 
-	return answer, nil
+	return resulto.Success(answer)
 }
 
-func _getBody(model string, messages []map[string]interface{}, system string) map[string]interface{} {
-	return map[string]interface{}{
+func _getBody(model string, messages []map[string]any, system string) map[string]any {
+	return map[string]any{
 		"model":      model,
 		"max_tokens": maxTokens,
 		"system":     system,
@@ -71,7 +74,7 @@ func _getBody(model string, messages []map[string]interface{}, system string) ma
 	}
 }
 
-func _doRequest(body map[string]interface{}, apiKey string) (map[string]interface{}, error) {
+func _doRequest(body map[string]any, apiKey string) (map[string]any, error) {
 	// Convert the request body to JSON
 	jsonData, err := json.Marshal(body)
 	if err != nil {
@@ -96,7 +99,7 @@ func _doRequest(body map[string]interface{}, apiKey string) (map[string]interfac
 	defer resp.Body.Close()
 
 	// Read the response body as a string
-	var respData map[string]interface{}
+	var respData map[string]any
 	err = json.NewDecoder(resp.Body).Decode(&respData)
 	if err != nil {
 		return nil, err
