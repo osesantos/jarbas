@@ -13,12 +13,14 @@ import (
 	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/charmbracelet/glamour"
 )
 
 const (
 	DefaultPrompt  = "\u001B[1;34manswer:\u001B[0m "
 	TokenPrompt    = "\u001B[1;35mtoken:\u001B[0m "
 	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
+	Separator      = "\u001B[1;33m-------------------------\u001B[0m"
 )
 
 func Chat(settings settings.Settings, messages []map[string]any) error {
@@ -76,7 +78,15 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 			if withToken {
 				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt + answer.LastMessage)
 			} else {
-				fmt.Println(DefaultPrompt + answer.LastMessage)
+				fmt.Println(DefaultPrompt)
+				fmt.Println(Separator)
+				out, err := glamour.Render(answer.LastMessage, "dark")
+				if err != nil {
+					fmt.Println("Error rendering message:", err)
+				} else {
+					fmt.Println(out)
+				}
+				fmt.Println(Separator)
 			}
 		}
 	}
@@ -183,7 +193,7 @@ func _listConversations() (string, error) {
 	return file, nil
 }
 
-func _loadConversation(file string) ([]map[string]interface{}, error) {
+func _loadConversation(file string) ([]map[string]any, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
@@ -197,8 +207,8 @@ func _loadConversation(file string) ([]map[string]interface{}, error) {
 	return messages, nil
 }
 
-func _parse(data []byte) ([]map[string]interface{}, error) {
-	var respData []map[string]interface{}
+func _parse(data []byte) ([]map[string]any, error) {
+	var respData []map[string]any
 	err := json.Unmarshal(data, &respData)
 	if err != nil {
 		return nil, err

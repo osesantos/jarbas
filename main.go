@@ -30,15 +30,6 @@ func main() {
 				},
 			},
 			{
-				Name:    "dashboard",
-				Aliases: []string{"d"},
-				Usage:   "Start a server dashboard with jarbas",
-				Action: func(cCtx *cli.Context) error {
-					commands.Serve()
-					return nil
-				},
-			},
-			{
 				Name:    "chat",
 				Aliases: []string{"c"},
 				Usage:   "Start a chat with jarbas",
