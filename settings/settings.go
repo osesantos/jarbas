@@ -50,10 +50,7 @@ func GetJsonKey(fieldName string) string {
 }
 
 func GetKey() resulto.Result[string] {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return resulto.Failure[string](err)
-	}
+	file := utils.GetSettingsFile().Unwrap()
 
 	defer file.Close()
 
@@ -71,10 +68,7 @@ func GetKey() resulto.Result[string] {
 }
 
 func GetModel() resulto.Result[string] {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return resulto.Failure[string](err)
-	}
+	file := utils.GetSettingsFile().Unwrap()
 
 	defer file.Close()
 
@@ -92,10 +86,7 @@ func GetModel() resulto.Result[string] {
 }
 
 func GetSaveMessages() resulto.Result[bool] {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return resulto.Failure[bool](err)
-	}
+	file := utils.GetSettingsFile().Unwrap()
 
 	defer file.Close()
 
@@ -122,10 +113,7 @@ func GetSaveMessages() resulto.Result[bool] {
 }
 
 func GetVendor() resulto.Result[string] {
-	file, err := utils.GetSettingsFile()
-	if err != nil {
-		return resulto.Failure[string](err)
-	}
+	file := utils.GetSettingsFile().Unwrap()
 
 	defer file.Close()
 

@@ -7,15 +7,17 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/osesantos/resulto"
 )
 
 const ConfigFile = "/.jarbasrc"
 
-func GetSettingsFile() (*os.File, error) {
+func GetSettingsFile() resulto.Result[*os.File] {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
-		return nil, err
+		return resulto.Failure[*os.File](err)
 	}
 
 	path := filepath.Join(homeDir, ConfigFile)
@@ -24,10 +26,10 @@ func GetSettingsFile() (*os.File, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println("Unable to find config file, please run 'jarbas init' to create one.")
-		return nil, err
+		return resulto.Failure[*os.File](err)
 	}
 
-	return file, nil
+	return resulto.Success(file)
 }
 
 func FileExists(path string) bool {
