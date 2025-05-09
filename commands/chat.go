@@ -31,7 +31,6 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 	fmt.Println("Welcome to the chat! Write 'exit' or press Ctrl-C to close the chat.")
 	fmt.Println("Write 'token' to activate and deactivate token information.")
 	fmt.Println("Write 'editor' to open an editor to write your question.")
-	fmt.Println("Write 'previous' to see previous chat messages.")
 	fmt.Println("Write 'role' to change the role of the assistant.")
 	fmt.Println("")
 
@@ -76,7 +75,15 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 			answer := actions.ChatQuestion(messages, input, settings, systemPrompt)
 			messages = answer.PreviousMessages
 			if withToken {
-				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt + answer.LastMessage)
+				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt)
+				fmt.Println(Separator)
+				out, err := glamour.Render(answer.LastMessage, "dark")
+				if err != nil {
+					fmt.Println("Error rendering message:", err)
+				} else {
+					fmt.Println(out)
+				}
+				fmt.Println(Separator)
 			} else {
 				fmt.Println(DefaultPrompt)
 				fmt.Println(Separator)
