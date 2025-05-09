@@ -16,6 +16,7 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Improve agent capabilities, by adding the possibility to scrape the web in real time, get an article and summarize it.
 - [x] Add the http://github/osesantos/resulto package to improve the error handling
 - [x] Add markdown support
+- [ ] Allow user to show the current system prompt in chat
 - [ ] Add support for ollama - https://ollama.com/ - running in local cluster
 - [ ] Add support for gemini - https://www.google.com/intl/en_us/gemini/
 - [ ] Add TUI support via a new go client
