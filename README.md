@@ -18,6 +18,9 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Add markdown support
 - [ ] Add support for ollama - https://ollama.com/ - running in local cluster
 - [ ] Add support for gemini - https://www.google.com/intl/en_us/gemini/
+- [ ] Add TUI support via a new go client
+- [ ] Add server functionality to run the chatgpt in a server and expose a rest api
+- [ ] Add NoSQL support to save the conversations in a database
 
 ## Chat mode
 
