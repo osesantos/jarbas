@@ -130,6 +130,7 @@ func ContinueChat(settings settings.Settings) error {
 
 func _listRoles() (string, error) {
 	roles := []string{
+		model.AIEngineer,
 		model.SoftwareEngineer,
 		model.CloudEngineer,
 		model.Writer,
