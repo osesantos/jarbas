@@ -23,7 +23,7 @@ const (
 	Separator      = "\u001B[1;33m-------------------------\u001B[0m"
 )
 
-func Chat(settings settings.Settings, messages []map[string]any) error {
+func Chat(settings settings.Settings, messages []map[string]any, isOldConversation bool) error {
 	if messages == nil {
 		messages = []map[string]any{}
 	}
@@ -32,6 +32,11 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 	fmt.Println("Write 'token' to activate and deactivate token information.")
 	fmt.Println("Write 'editor' to open an editor to write your question.")
 	fmt.Println("Write 'role' to change the role of the assistant.")
+	if isOldConversation {
+		fmt.Println("")
+		fmt.Println("\u001B[1;33mYou are continuing an old conversation. You can still change the role.\u001B[0m")
+		fmt.Println("Write 'previous' to see the previous messages in the conversation.")
+	}
 	fmt.Println("")
 
 	withToken := false
@@ -41,6 +46,30 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 		input, err := _getInput()
 		if err != nil || input == "exit" {
 			break
+		}
+
+		if input == "previous" {
+			if len(messages) != 0 {
+				fmt.Println("\u001B[1;33mPrevious messages in the conversation:\u001B[0m")
+				fmt.Println("")
+				for i, msg := range messages {
+					content, ok := msg["content"].(string)
+					if !ok {
+						content = "No content"
+					}
+					out, err := glamour.Render(content, "dark")
+					if err != nil {
+						fmt.Println("Error rendering message:", err)
+					} else {
+						fmt.Printf("\u001B[1;33mMessage %d:\u001B[0m %s\n", i+1, out)
+						fmt.Println(Separator)
+					}
+				}
+			} else {
+				fmt.Println("\u001B[1;31mNo previous messages in the conversation.\u001B[0m")
+			}
+
+			continue
 		}
 
 		if input == "editor" {
@@ -56,10 +85,12 @@ func Chat(settings settings.Settings, messages []map[string]any) error {
 			if err != nil {
 				return err
 			}
+
 			messages = append(messages, map[string]any{
 				"role":    "system",
 				"content": vendors.MapToSystemPrompt(role),
 			})
+
 			continue
 		}
 
@@ -114,13 +145,13 @@ func ContinueChat(settings settings.Settings) error {
 		return err
 	}
 
-	// parse conversation string to []map[string]interface{}
+	// Parse conversation string to []map[string]interface{}
 	messages, err := _loadConversation(file)
 	if err != nil {
 		return err
 	}
 
-	err = Chat(settings, messages)
+	err = Chat(settings, messages, true)
 	if err != nil {
 		return err
 	}
@@ -188,7 +219,7 @@ func _listConversations() (string, error) {
 
 			files = utils.OrderFilesByTime(files)
 
-			fmt.Println("ordered files:\n", files)
+			files = utils.AddDateTimeToFiles(files)
 
 			return files
 		},
@@ -198,7 +229,9 @@ func _listConversations() (string, error) {
 		return "", err
 	}
 
-	return file, nil
+	cleanedFile := utils.CleanFileName(file)
+
+	return cleanedFile, nil
 }
 
 func _loadConversation(file string) ([]map[string]any, error) {

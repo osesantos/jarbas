@@ -35,7 +35,7 @@ func main() {
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
 					settings := settings.GetSettings()
-					err := commands.Chat(settings, nil)
+					err := commands.Chat(settings, nil, false)
 					if err != nil {
 						return err
 					}

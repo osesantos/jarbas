@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -46,32 +47,62 @@ func FileNotEmpty(path string) bool {
 	return fi.Size() > 0
 }
 
+func extractTimestamp(filename string) string {
+	// File format: <uuid>-<timestamp>.json
+	// Extract the timestamp part
+	block := strings.Replace(filename, ".json", "", 1)
+	parts := strings.Split(block, "-")
+
+	if len(parts) < 2 {
+		return ""
+	}
+
+	return parts[len(parts)-1] // Return the last part as the timestamp
+}
+
 func OrderFilesByTime(files []string) []string {
 	// File format: <uuid>-<timestamp>.json
 	// sort by timestamp
-	sort.Slice(files, func(i, j int) bool {
-		timeString := strings.Split(files[i], "-")[1]
-		timeString = strings.Replace(timeString, ".json", "", 1)
+	filesCopy := make([]string, len(files))
+	copy(filesCopy, files)
 
-		fmt.Println("Parsing: " + timeString)
-		iTime, err := time.Parse(time.RFC3339, timeString)
-		if err != nil {
-			fmt.Println(err)
-			return false
-		}
+	sort.Slice(filesCopy, func(i, j int) bool {
+		ti := extractTimestamp(filesCopy[i])
+		tj := extractTimestamp(filesCopy[j])
 
-		timeString = strings.Split(files[j], "-")[1]
-		timeString = strings.Replace(timeString, ".json", "", 1)
-
-		fmt.Println("Parsing: " + timeString)
-		jTime, err := time.Parse(time.RFC3339, timeString)
-		if err != nil {
-			fmt.Println(err)
-			return false
-		}
-
-		return iTime.Before(jTime)
+		return ti > tj // Sort in descending order
 	})
 
+	return filesCopy
+}
+
+func AddDateTimeToFiles(files []string) []string {
+	for i, file := range files {
+		// Extract the timestamp part from the filename
+		timestamp := extractTimestamp(file)
+
+		fmt.Println("Extracted timestamp:", timestamp)
+
+		if timestamp == "" {
+			continue // Skip files without a valid timestamp
+		}
+
+		unixSec, err := strconv.ParseInt(timestamp, 10, 64)
+		if err != nil {
+			fmt.Println("Error parsing timestamp:", err)
+			continue // Skip files with invalid timestamps
+		}
+
+		t := time.Unix(unixSec, 0)
+
+		files[i] = fmt.Sprintf("%s (%s)", file, t.Format("02-01-2006 15:04:05"))
+	}
 	return files
+}
+
+func CleanFileName(fileName string) string {
+	// Remove the "(date time)" part from the filename
+	fileName = strings.Split(fileName, " (")[0]
+
+	return fileName
 }
