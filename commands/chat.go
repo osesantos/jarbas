@@ -21,6 +21,7 @@ const (
 	TokenPrompt    = "\u001B[1;35mtoken:\u001B[0m "
 	QuestionPrompt = "\u001B[1;32mquestion:\u001B[0m "
 	Separator      = "\u001B[1;33m-------------------------\u001B[0m"
+	Saving         = "\u001B[1;32mSaving conversation...\u001B[0m"
 )
 
 func Chat(settings settings.Settings, messages []map[string]any, isOldConversation bool) error {
@@ -139,12 +140,29 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 		}
 	}
 
-	if settings.SaveMessages {
-		err := SaveConversation(messages)
-		if err != nil {
-			return err
+	defer func() {
+		if settings.SaveMessages {
+			titlePrompt :=
+				`
+			I need a title for the conversation.
+			Please provide a short and descriptive title for the conversation.
+			Keep in mind that the response will be used directly as the file name, so your response should not contain any special characters or spaces and should be concise.
+			`
+
+			title := actions.ChatQuestion(messages, titlePrompt, settings, systemPrompt).LastMessage
+
+			fmt.Println(Saving)
+			fmt.Println("Saving conversation with title:", title)
+
+			err := SaveConversation(model.Conversation{
+				Messages: messages,
+				Title:    title,
+			})
+			if err != nil {
+				return
+			}
 		}
-	}
+	}()
 
 	return nil
 }
@@ -156,12 +174,12 @@ func ContinueChat(settings settings.Settings) error {
 	}
 
 	// Parse conversation string to []map[string]interface{}
-	messages, err := _loadConversation(file)
+	conversation, err := _loadConversation(file)
 	if err != nil {
 		return err
 	}
 
-	err = Chat(settings, messages, true)
+	err = Chat(settings, conversation.Messages, true)
 	if err != nil {
 		return err
 	}
@@ -227,8 +245,13 @@ func _listConversations() (string, error) {
 			dir := GetCacheDir()
 			files, _ := filepath.Glob(dir + "/" + toComplete + "*")
 
+			// order files by time
 			files = utils.OrderFilesByTime(files)
 
+			// add the title to the files
+			files = utils.AddTitleToFiles(files, _loadConversation)
+
+			// add the date time to the files
 			files = utils.AddDateTimeToFiles(files)
 
 			return files
@@ -239,30 +262,40 @@ func _listConversations() (string, error) {
 		return "", err
 	}
 
+	// Remove the "title (date time)" part from the filename
 	cleanedFile := utils.CleanFileName(file)
 
 	return cleanedFile, nil
 }
 
-func _loadConversation(file string) ([]map[string]any, error) {
+func _loadConversation(file string) (model.Conversation, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err
+		return model.Conversation{}, err
 	}
 
-	messages, err := _parse(data)
+	conversation, err := _parse(data)
 	if err != nil {
-		return nil, err
+		return model.Conversation{}, err
 	}
 
-	return messages, nil
+	return conversation, nil
 }
 
-func _parse(data []byte) ([]map[string]any, error) {
-	var respData []map[string]any
+func _parse(data []byte) (model.Conversation, error) {
+	var respData model.Conversation
 	err := json.Unmarshal(data, &respData)
 	if err != nil {
-		return nil, err
+		// lets try to parse it as a map first
+		var respMap []map[string]any
+		err = json.Unmarshal(data, &respMap)
+		if err != nil {
+			return model.Conversation{}, fmt.Errorf("error parsing conversation: %w", err)
+		}
+
+		return model.Conversation{
+			Messages: respMap,
+		}, err
 	}
 	return respData, nil
 }

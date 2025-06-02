@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"jarbas-go/main/model"
 	"os"
 	"path/filepath"
 	"sort"
@@ -57,6 +58,12 @@ func extractTimestamp(filename string) string {
 		return ""
 	}
 
+	// Lets check if there is something after
+	smallerParts := strings.Split(parts[len(parts)-1], " ")
+	if len(smallerParts) > 1 {
+		return smallerParts[0] // Return the first part as the timestamp
+	}
+
 	return parts[len(parts)-1] // Return the last part as the timestamp
 }
 
@@ -81,8 +88,6 @@ func AddDateTimeToFiles(files []string) []string {
 		// Extract the timestamp part from the filename
 		timestamp := extractTimestamp(file)
 
-		fmt.Println("Extracted timestamp:", timestamp)
-
 		if timestamp == "" {
 			continue // Skip files without a valid timestamp
 		}
@@ -100,9 +105,22 @@ func AddDateTimeToFiles(files []string) []string {
 	return files
 }
 
+func AddTitleToFiles(files []string, parser func(file string) (model.Conversation, error)) []string {
+	for i, file := range files {
+		conversation, err := parser(file)
+		if err != nil {
+			// Since we cant find the title for this file, we will just skip it
+			continue // Skip files with invalid JSON
+		}
+
+		files[i] = fmt.Sprintf("%s %s", file, conversation.Title)
+	}
+	return files
+}
+
 func CleanFileName(fileName string) string {
 	// Remove the "(date time)" part from the filename
-	fileName = strings.Split(fileName, " (")[0]
+	fileName = strings.Split(fileName, " ")[0]
 
 	return fileName
 }

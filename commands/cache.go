@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"jarbas-go/main/model"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,7 +33,7 @@ func CreateCacheDir() error {
 	return nil
 }
 
-func SaveConversation(messages []map[string]interface{}) error {
+func SaveConversation(conversation model.Conversation) error {
 	path := GetCacheDir()
 	// get random uuid for the conversation file
 	id := uuid.NewString()
@@ -58,7 +59,7 @@ func SaveConversation(messages []map[string]interface{}) error {
 	defer file.Close()
 
 	// convert to json string
-	jsonData, err := json.Marshal(messages)
+	jsonData, err := json.Marshal(conversation)
 	if err != nil {
 		return err
 	}
@@ -71,14 +72,15 @@ func SaveConversation(messages []map[string]interface{}) error {
 	return nil
 }
 
-func GetConversations() ([]map[string]interface{}, error) {
+// Deprecated: Use _loadConversation instead
+func GetConversations() (model.Conversation, error) {
 	path := GetCacheDir()
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return nil, err
+		return model.Conversation{}, err
 	}
 
-	var conversations []map[string]interface{}
+	var conversation model.Conversation
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -87,19 +89,19 @@ func GetConversations() ([]map[string]interface{}, error) {
 		filePath := filepath.Join(path, file.Name())
 		file, err := os.Open(filePath)
 		if err != nil {
-			return nil, err
+			return model.Conversation{}, err
 		}
 
 		defer file.Close()
 
-		var conversation []map[string]interface{}
-		_, err = fmt.Fscan(file, &conversation)
+		var message []map[string]any
+		_, err = fmt.Fscan(file, &message)
 		if err != nil {
-			return nil, err
+			return model.Conversation{}, err
 		}
 
-		conversations = append(conversations, conversation...)
+		conversation.Messages = append(conversation.Messages, message...)
 	}
 
-	return conversations, nil
+	return conversation, nil
 }
