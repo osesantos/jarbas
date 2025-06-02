@@ -24,9 +24,9 @@ const (
 	Saving         = "\u001B[1;32mSaving conversation...\u001B[0m"
 )
 
-func Chat(settings settings.Settings, messages []map[string]any, isOldConversation bool) error {
+func Chat(settings settings.Settings, messages []model.Message, isOldConversation bool) error {
 	if messages == nil {
-		messages = []map[string]any{}
+		messages = []model.Message{}
 	}
 
 	renderer, err := glamour.NewTermRenderer(
@@ -64,10 +64,7 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 				fmt.Println("\u001B[1;33mPrevious messages in the conversation:\u001B[0m")
 				fmt.Println("")
 				for i, msg := range messages {
-					content, ok := msg["content"].(string)
-					if !ok {
-						content = "No content"
-					}
+					content := msg.Content
 					out, err := renderer.Render(content)
 					if err != nil {
 						fmt.Println("Error rendering message:", err)
@@ -97,9 +94,9 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 				return err
 			}
 
-			messages = append(messages, map[string]any{
-				"role":    "system",
-				"content": vendors.MapToSystemPrompt(role),
+			messages = append(messages, model.Message{
+				Role:    model.System,
+				Content: vendors.MapToSystemPrompt(role),
 			})
 
 			continue
@@ -147,6 +144,10 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 			I need a title for the conversation.
 			Please provide a short and descriptive title for the conversation.
 			Keep in mind that the response will be used directly as the file name, so your response should not contain any special characters or spaces and should be concise.
+			YOU MUST NOT RESPOND WITH ANYTHING OTHER THAN THE TITLE.
+			Fomat MUST ALWAYS BE: "Title of the conversation"
+			With no additional text or explanation.
+			With no more than 5 words.
 			`
 
 			title := actions.ChatQuestion(messages, titlePrompt, settings, systemPrompt).LastMessage
@@ -154,7 +155,7 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 			fmt.Println(Saving)
 			fmt.Println("Saving conversation with title:", title)
 
-			err := SaveConversation(model.Conversation{
+			err := SaveConversation(model.Chat{
 				Messages: messages,
 				Title:    title,
 			})
@@ -268,32 +269,32 @@ func _listConversations() (string, error) {
 	return cleanedFile, nil
 }
 
-func _loadConversation(file string) (model.Conversation, error) {
+func _loadConversation(file string) (model.Chat, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return model.Conversation{}, err
+		return model.Chat{}, err
 	}
 
 	conversation, err := _parse(data)
 	if err != nil {
-		return model.Conversation{}, err
+		return model.Chat{}, err
 	}
 
 	return conversation, nil
 }
 
-func _parse(data []byte) (model.Conversation, error) {
-	var respData model.Conversation
+func _parse(data []byte) (model.Chat, error) {
+	var respData model.Chat
 	err := json.Unmarshal(data, &respData)
 	if err != nil {
 		// lets try to parse it as a map first
-		var respMap []map[string]any
+		var respMap []model.Message
 		err = json.Unmarshal(data, &respMap)
 		if err != nil {
-			return model.Conversation{}, fmt.Errorf("error parsing conversation: %w", err)
+			return model.Chat{}, fmt.Errorf("error parsing conversation: %w", err)
 		}
 
-		return model.Conversation{
+		return model.Chat{
 			Messages: respMap,
 		}, err
 	}

@@ -37,9 +37,10 @@ func DoSingleQuestion(input string, settings settings.Settings) resulto.Result[s
 	return resulto.Success(text)
 }
 
-func DoChatQuestion(messages []map[string]any, question string, settings settings.Settings) resulto.Result[model.Answer] {
-	newQuestion := map[string]any{
-		"role": "user", "content": question,
+func DoChatQuestion(messages []model.Message, question string, settings settings.Settings) resulto.Result[model.Answer] {
+	newQuestion := model.Message{
+		Role:    model.User,
+		Content: question,
 	}
 
 	finalMessage := append(messages, newQuestion)
@@ -64,11 +65,14 @@ func DoChatQuestion(messages []map[string]any, question string, settings setting
 	totalTokens := respData["usage"].(map[string]any)["total_tokens"]
 
 	answer := model.Answer{
-		PreviousMessages: append(finalMessage, messagesRequest),
-		LastMessage:      lastMessage,
-		PromptToken:      fmt.Sprint(promptTokens),
-		CompletionToken:  fmt.Sprint(completionTokens),
-		TotalToken:       fmt.Sprint(totalTokens),
+		PreviousMessages: append(finalMessage, model.Message{
+			Role:    messagesRequest["role"].(string),
+			Content: messagesRequest["content"].(string),
+		}),
+		LastMessage:     lastMessage,
+		PromptToken:     fmt.Sprint(promptTokens),
+		CompletionToken: fmt.Sprint(completionTokens),
+		TotalToken:      fmt.Sprint(totalTokens),
 	}
 
 	return resulto.Success(answer)
@@ -107,7 +111,7 @@ func _doRequest(body map[string]any, apiKey string) (map[string]any, error) {
 	return respData, nil
 }
 
-func _validateResponse(response interface{}) (string, error) {
+func _validateResponse(response any) (string, error) {
 	if response == nil {
 		return "", fmt.Errorf("response is nil")
 	}

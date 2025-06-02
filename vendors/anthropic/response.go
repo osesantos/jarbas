@@ -1,6 +1,9 @@
 package anthropic
 
-import "fmt"
+import (
+	"fmt"
+	"jarbas-go/main/model"
+)
 
 type Response struct {
 	Role         string  `json:"role"`
@@ -57,9 +60,9 @@ func ParseResponse(respData map[string]interface{}) (Response, error) {
 	}, nil
 }
 
-func (r *Response) GetMessageRequest() map[string]interface{} {
-	return map[string]interface{}{
-		"role":    r.Role,
-		"content": r.Content,
+func (r *Response) GetMessageRequest() model.Message {
+	return model.Message{
+		Role:    r.Role,
+		Content: r.Content,
 	}
 }

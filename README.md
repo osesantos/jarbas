@@ -16,7 +16,8 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Improve agent capabilities, by adding the possibility to scrape the web in real time, get an article and summarize it.
 - [x] Add the http://github/osesantos/resulto package to improve the error handling
 - [x] Add markdown support
-- [ ] Add gemini support
+- [x] Add gemini support
+- [ ] Add tests
 - [ ] Add chat options to select the model to use, temperature, max tokens, etc.
 - [ ] Add chat option to copy the response to clipboard
     - Use vim keybindings to copy the response, use the `y` key to copy the response

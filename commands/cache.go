@@ -33,7 +33,7 @@ func CreateCacheDir() error {
 	return nil
 }
 
-func SaveConversation(conversation model.Conversation) error {
+func SaveConversation(conversation model.Chat) error {
 	path := GetCacheDir()
 	// get random uuid for the conversation file
 	id := uuid.NewString()
@@ -73,14 +73,14 @@ func SaveConversation(conversation model.Conversation) error {
 }
 
 // Deprecated: Use _loadConversation instead
-func GetConversations() (model.Conversation, error) {
+func GetConversations() (model.Chat, error) {
 	path := GetCacheDir()
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return model.Conversation{}, err
+		return model.Chat{}, err
 	}
 
-	var conversation model.Conversation
+	var conversation model.Chat
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -89,15 +89,15 @@ func GetConversations() (model.Conversation, error) {
 		filePath := filepath.Join(path, file.Name())
 		file, err := os.Open(filePath)
 		if err != nil {
-			return model.Conversation{}, err
+			return model.Chat{}, err
 		}
 
 		defer file.Close()
 
-		var message []map[string]any
+		var message []model.Message
 		_, err = fmt.Fscan(file, &message)
 		if err != nil {
-			return model.Conversation{}, err
+			return model.Chat{}, err
 		}
 
 		conversation.Messages = append(conversation.Messages, message...)

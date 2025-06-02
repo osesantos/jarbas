@@ -18,9 +18,9 @@ const (
 )
 
 func DoSingleQuestion(input string, settings settings.Settings, system string) resulto.Result[string] {
-	body := _getBody(settings.Model, []map[string]any{{
-		"role":    "user",
-		"content": input,
+	body := _getBody(settings.Model, []model.Message{{
+		Role:    model.User,
+		Content: input,
 	}}, system)
 
 	respData, err := _doRequest(body, settings.APIKey)
@@ -36,9 +36,10 @@ func DoSingleQuestion(input string, settings settings.Settings, system string) r
 	return resulto.Success(response.Content)
 }
 
-func DoChatQuestion(messages []map[string]any, question string, settings settings.Settings, system string) resulto.Result[model.Answer] {
-	newQuestion := map[string]any{
-		"role": "user", "content": question,
+func DoChatQuestion(messages []model.Message, question string, settings settings.Settings, system string) resulto.Result[model.Answer] {
+	newQuestion := model.Message{
+		Role:    model.User,
+		Content: question,
 	}
 
 	conversation := append(messages, newQuestion)
@@ -65,7 +66,7 @@ func DoChatQuestion(messages []map[string]any, question string, settings setting
 	return resulto.Success(answer)
 }
 
-func _getBody(model string, messages []map[string]any, system string) map[string]any {
+func _getBody(model string, messages []model.Message, system string) map[string]any {
 	return map[string]any{
 		"model":      model,
 		"max_tokens": maxTokens,

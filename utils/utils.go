@@ -105,7 +105,7 @@ func AddDateTimeToFiles(files []string) []string {
 	return files
 }
 
-func AddTitleToFiles(files []string, parser func(file string) (model.Conversation, error)) []string {
+func AddTitleToFiles(files []string, parser func(file string) (model.Chat, error)) []string {
 	for i, file := range files {
 		conversation, err := parser(file)
 		if err != nil {

@@ -19,7 +19,7 @@ func SingleQuestion(input string, settings settings.Settings, system string) str
 	return ""
 }
 
-func ChatQuestion(messages []map[string]any, question string, settings settings.Settings, system string) model.Answer {
+func ChatQuestion(messages []model.Message, question string, settings settings.Settings, system string) model.Answer {
 	if settings.Vendor == model.OpenAI {
 		return openai.DoChatQuestion(messages, question, settings).Unwrap()
 	}
