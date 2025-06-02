@@ -28,6 +28,16 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 		messages = []map[string]any{}
 	}
 
+	renderer, err := glamour.NewTermRenderer(
+		glamour.WithStandardStyle("dark"),
+		glamour.WithEmoji(),
+		glamour.WithWordWrap(0),
+		glamour.WithTableWrap(true),
+	)
+	if err != nil {
+		return fmt.Errorf("error initializing glamour renderer: %w", err)
+	}
+
 	fmt.Println("Welcome to the chat! Write 'exit' or press Ctrl-C to close the chat.")
 	fmt.Println("Write 'token' to activate and deactivate token information.")
 	fmt.Println("Write 'editor' to open an editor to write your question.")
@@ -57,7 +67,7 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 					if !ok {
 						content = "No content"
 					}
-					out, err := glamour.Render(content, "dark")
+					out, err := renderer.Render(content)
 					if err != nil {
 						fmt.Println("Error rendering message:", err)
 					} else {
@@ -108,7 +118,7 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 			if withToken {
 				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt)
 				fmt.Println(Separator)
-				out, err := glamour.Render(answer.LastMessage, "dark")
+				out, err := renderer.Render(answer.LastMessage)
 				if err != nil {
 					fmt.Println("Error rendering message:", err)
 				} else {
@@ -118,7 +128,7 @@ func Chat(settings settings.Settings, messages []map[string]any, isOldConversati
 			} else {
 				fmt.Println(DefaultPrompt)
 				fmt.Println(Separator)
-				out, err := glamour.Render(answer.LastMessage, "dark")
+				out, err := renderer.Render(answer.LastMessage)
 				if err != nil {
 					fmt.Println("Error rendering message:", err)
 				} else {
