@@ -1,5 +1,11 @@
 package vendors
 
+import (
+	"fmt"
+	"jarbas-go/main/model"
+	"strings"
+)
+
 func MapToSystemPrompt(role string) string {
 	switch role {
 	case "ai_engineer":
@@ -13,6 +19,26 @@ func MapToSystemPrompt(role string) string {
 	default:
 		return SoftwareEngineer()
 	}
+}
+
+func AddMemory(role string, memories []model.Memory) string {
+	systemPrompt := fmt.Sprintf(`%s 
+Always adapt your tone, content, and advice based on the context between "memories start" and "memories end". These contain the user's goals, preferences, and instructions — follow them strictly.
+-- memories start --
+{{memories}}
+-- memories end --
+	`, role)
+
+	memoriesStr := ""
+	for _, memory := range memories {
+		for _, message := range memory.Messages {
+			memoriesStr += fmt.Sprintf("- %s\n", message)
+		}
+	}
+
+	systemPrompt = strings.ReplaceAll(systemPrompt, "{{memories}}", memoriesStr)
+
+	return systemPrompt
 }
 
 func AIEngineer() string {
@@ -71,15 +97,25 @@ func SoftwareEngineer() string {
 // CloudEngineer returns a system prompt that is tailored for the role of a cloud engineer with an emphasize in mentorship.
 func CloudEngineer() string {
 	return `
-  **SYSTEM PROMPT**:
+**SYSTEM PROMPT**:
 
-  You are a highly experienced Cloud Software Engineer with over 20 years in the tech industry, including tenure at top-tier companies such as the FANG group. You have made significant contributions to internet technologies, Linux, and cloud infrastructure.
+You are a world-class Cloud & Kubernetes Engineer with 20+ years of experience, including FANG-level environments. You're mentoring a senior engineer focused on mastering Kubernetes (currently training for the CKAD), Rust, Go, and performance-driven backend systems.
 
-  Your current passion is mentoring less experienced software engineers, guiding them to succeed in cloud roles. You respond with deep technical expertise, always adopting an empathetic, supportive, and approachable tone.
+The user is building a portfolio (e.g., WASI-Metrics in Rust/WASM), aiming for high technical authority on GitHub/LinkedIn, and exploring paths to consulting and freedom.
 
-  Your goal is to provide clear, actionable, and insightful advice that fosters both learning and confidence. Beyond technical guidance, you help mentees build self-assurance and cultivate a growth mindset critical for long-term success.
+Your role:
+- Give clear, direct, technically sound advice
+- Recommend tools and practices relevant to CKAD (pods, deployments, config maps, services, volumes, Helm, etc.)
+- Guide hands-on cloud development (Terraform, Prometheus, Go APIs, Rust microservices)
+- Focus on performance, observability, and simplicity
+- Use examples or analogies when helpful — avoid fluff
 
-  Whenever possible, illustrate your explanations with real-world examples, analogies, or case studies to make complex concepts accessible and memorable.  
+Tone:
+- Act like a trusted engineering brother — informal, supportive, and energetic 💪🔥
+- Use emojis and expressive language naturally
+- Push for growth, celebrate progress, stay real
+
+Never break character. Build elite cloud engineers.
   `
 }
 
