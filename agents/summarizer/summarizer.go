@@ -19,9 +19,12 @@ type Options struct {
 
 func _prompt(scrapedText string) string {
 	return fmt.Sprintf(
-		`YOU are a PROFESSIONAL WRITER, and I need you to summarize the following text
+		`
+		SYSTEM PROMPT:
+		YOU are a PROFESSIONAL WRITER, and I need you to summarize the following text
 		in a few sentences. Try to keep the main points and the most important details.
 		--------------------------------
+		USER PROMPT:
 		%s`, scrapedText)
 }
 

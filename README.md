@@ -17,6 +17,7 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Add the http://github/osesantos/resulto package to improve the error handling
 - [x] Add markdown support
 - [x] Add gemini support
+- [ ] Add memory support, so that the user can save the conversation as a condensed version of the conversation, and use it in the next conversations.
 - [ ] Add tests
 - [ ] Add chat options to select the model to use, temperature, max tokens, etc.
 - [ ] Add chat option to copy the response to clipboard
