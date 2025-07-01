@@ -116,8 +116,6 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 				systemPrompt = vendors.AddMemory(systemPrompt, memories) // Add memories to the system prompt
 			}
 
-			fmt.Println(systemPrompt)
-
 			answer := actions.ChatQuestion(messages, input, settings, systemPrompt)
 			messages = answer.PreviousMessages
 			if withToken {
