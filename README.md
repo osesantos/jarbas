@@ -17,9 +17,17 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [x] Add the http://github/osesantos/resulto package to improve the error handling
 - [x] Add markdown support
 - [x] Add gemini support
-- [ ] Add memory support, so that the user can save the conversation as a condensed version of the conversation, and use it in the next conversations.
-- [ ] Add tests
+- [x] Add one liner support, so that the user can ask for a one liner answer to the question.
+- [x] Add memory support, so that the user can save the conversation as a condensed version of the conversation, and use it in the next conversations.
 - [ ] Add chat options to select the model to use, temperature, max tokens, etc.
+- [ ] Add TUI support to the chat.
+- [ ] Add an agent that will look at the current git changes (in current dir) and suggest improvements to the code.
+- [ ] Add an agent that will look at the current git changes (in current dir) and provide a summary of the changes for the commit message.
+- [ ] Add support for the mcp (rag)
+    - [ ] Look for notes in the notebook
+    - [ ] Summarize notes
+    - [ ] Create and edit notes
+    ...
 - [ ] Add chat option to copy the response to clipboard
     - Use vim keybindings to copy the response, use the `y` key to copy the response
 - [ ] Allow user to show the current system prompt in chat
@@ -28,6 +36,7 @@ jarbas is a cli chatgpt implementation that uses gpt APIs to answer questions
 - [ ] Add TUI support via a new go client
 - [ ] Add server functionality to run the chatgpt in a server and expose a rest api
 - [ ] Add NoSQL support to save the conversations in a database
+- [ ] Add tests
 
 ## Chat mode
 
