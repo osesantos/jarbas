@@ -56,9 +56,9 @@ func main() {
 				},
 			},
 			{
-				Name:    "get-command",
-				Aliases: []string{"gc"},
-				Usage:   "Ask jarbas to generate a command for you, always start with 'linux:' or 'windows:' to specify the OS",
+				Name:    "oneliner",
+				Aliases: []string{"ol"},
+				Usage:   "Ask jarbas to generate a oneliner for you, always start with 'linux:' or 'windows:' to specify the OS",
 				Action: func(cCtx *cli.Context) error {
 					settings := settings.GetSettings(cCtx)
 					oneliner, err := commands.GetOneLiner(settings, cCtx.Args().First())
@@ -66,6 +66,20 @@ func main() {
 						return err
 					}
 					fmt.Println(commands.DefaultPrompt + oneliner)
+					return nil
+				},
+			},
+			{
+				Name:    "gitcommit",
+				Aliases: []string{"gc"},
+				Usage:   "Ask jarbas to generate a git commit command for you based on the current dir cached changes",
+				Action: func(cCtx *cli.Context) error {
+					settings := settings.GetSettings(cCtx)
+					commitCommand, err := commands.GetGitCommit(settings)
+					if err != nil {
+						return err
+					}
+					fmt.Println(commands.DefaultPrompt + commitCommand)
 					return nil
 				},
 			},
