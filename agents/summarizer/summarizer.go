@@ -5,9 +5,9 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/commands"
+	"jarbas-go/main/prompts"
 	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
-	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/osesantos/resulto"
@@ -53,7 +53,7 @@ func Run(options Options, settings settings.Settings) {
 	scarpedText := utils.ScrapeText(options.URL).Unwrap()
 
 	prompt := _prompt(scarpedText)
-	response := actions.SingleQuestion(prompt, settings, vendors.ProfessionalWriter())
+	response := actions.SingleQuestion(prompt, settings, prompts.ProfessionalWriter())
 
 	fmt.Println(commands.DefaultPrompt + response)
 }

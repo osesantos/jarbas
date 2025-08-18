@@ -8,9 +8,9 @@ import (
 
 	"jarbas-go/main/actions"
 	"jarbas-go/main/model"
+	"jarbas-go/main/prompts"
 	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
-	"jarbas-go/main/vendors"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/charmbracelet/glamour"
@@ -96,7 +96,7 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 
 			messages = append(messages, model.Message{
 				Role:    model.System,
-				Content: vendors.MapToSystemPrompt(role),
+				Content: prompts.MapToSystemPrompt(role),
 			})
 
 			continue
@@ -110,10 +110,10 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 				fmt.Println("\u001B[1;31mtoken information deactivated!\u001B[0m")
 			}
 		} else {
-			systemPrompt = vendors.MapToSystemPrompt(role)
+			systemPrompt = prompts.MapToSystemPrompt(role)
 			memories := GetMemories().Unwrap()
 			if len(memories) > 0 {
-				systemPrompt = vendors.AddMemory(systemPrompt, memories) // Add memories to the system prompt
+				systemPrompt = prompts.AddMemory(systemPrompt, memories) // Add memories to the system prompt
 			}
 
 			answer := actions.ChatQuestion(messages, input, settings, systemPrompt)

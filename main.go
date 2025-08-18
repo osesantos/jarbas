@@ -8,8 +8,8 @@ import (
 	"jarbas-go/main/actions"
 	"jarbas-go/main/agents"
 	"jarbas-go/main/commands"
+	"jarbas-go/main/prompts"
 	"jarbas-go/main/settings"
-	"jarbas-go/main/vendors"
 
 	"github.com/urfave/cli/v2"
 )
@@ -56,6 +56,20 @@ func main() {
 				},
 			},
 			{
+				Name:    "get-command",
+				Aliases: []string{"gc"},
+				Usage:   "Ask jarbas to generate a command for you, always start with 'linux:' or 'windows:' to specify the OS",
+				Action: func(cCtx *cli.Context) error {
+					settings := settings.GetSettings()
+					oneliner, err := commands.GetOneLiner(settings, cCtx.Args().First())
+					if err != nil {
+						return err
+					}
+					fmt.Println(commands.DefaultPrompt + oneliner)
+					return nil
+				},
+			},
+			{
 				Name:    "agent",
 				Aliases: []string{"a"},
 				Usage:   "Run an agent",
@@ -77,7 +91,7 @@ func main() {
 		Action: func(cCtx *cli.Context) error {
 			settings := settings.GetSettings()
 			question := cCtx.Args().Get(1)
-			response := actions.SingleQuestion(question, settings, vendors.SoftwareEngineer())
+			response := actions.SingleQuestion(question, settings, prompts.SoftwareEngineer())
 			fmt.Println(commands.QuestionPrompt + question)
 			fmt.Println(commands.DefaultPrompt + response)
 			return nil
