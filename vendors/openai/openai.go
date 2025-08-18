@@ -50,6 +50,7 @@ func DoChatQuestion(messages []model.Message, question string, settings settings
 		"model":    settings.Model,
 		"messages": finalMessage,
 	}
+
 	respData, err := _doRequest(body, settings.APIKey)
 	if err != nil {
 		return resulto.Failure[model.Answer](err)
@@ -102,7 +103,7 @@ func _doRequest(body map[string]any, apiKey string) (map[string]any, error) {
 	defer resp.Body.Close()
 
 	// Read the response body as a string
-	var respData map[string]interface{}
+	var respData map[string]any
 	err = json.NewDecoder(resp.Body).Decode(&respData)
 	if err != nil {
 		return nil, err
@@ -120,7 +121,7 @@ func _validateResponse(response any) (string, error) {
 		return "", fmt.Errorf("response is empty")
 	}
 
-	if response.([]interface{})[0] == nil {
+	if response.([]any)[0] == nil {
 		return response.(string), fmt.Errorf("response is not the expected type")
 	}
 

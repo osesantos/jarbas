@@ -34,7 +34,7 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "Start a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					settings := settings.GetSettings()
+					settings := settings.GetSettings(cCtx)
 					err := commands.Chat(settings, nil, false)
 					if err != nil {
 						return err
@@ -47,7 +47,7 @@ func main() {
 				Aliases: []string{"cc"},
 				Usage:   "Continue a chat with jarbas",
 				Action: func(cCtx *cli.Context) error {
-					settings := settings.GetSettings()
+					settings := settings.GetSettings(cCtx)
 					err := commands.ContinueChat(settings)
 					if err != nil {
 						return err
@@ -60,7 +60,7 @@ func main() {
 				Aliases: []string{"gc"},
 				Usage:   "Ask jarbas to generate a command for you, always start with 'linux:' or 'windows:' to specify the OS",
 				Action: func(cCtx *cli.Context) error {
-					settings := settings.GetSettings()
+					settings := settings.GetSettings(cCtx)
 					oneliner, err := commands.GetOneLiner(settings, cCtx.Args().First())
 					if err != nil {
 						return err
@@ -74,7 +74,7 @@ func main() {
 				Aliases: []string{"a"},
 				Usage:   "Run an agent",
 				Action: func(cCtx *cli.Context) error {
-					settings := settings.GetSettings()
+					settings := settings.GetSettings(cCtx)
 					agents.RunAgent("", settings)
 					return nil
 				},
@@ -87,9 +87,14 @@ func main() {
 				Aliases: []string{"i"},
 				Usage:   "Input configuration from `FILE`",
 			},
+			&cli.StringFlag{
+				Name:    "model",
+				Aliases: []string{"m"},
+				Usage:   "Specify the model to use, e.g., gpt-3.5-turbo",
+			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			settings := settings.GetSettings()
+			settings := settings.GetSettings(cCtx)
 			question := cCtx.Args().Get(1)
 			response := actions.SingleQuestion(question, settings, prompts.SoftwareEngineer())
 			fmt.Println(commands.QuestionPrompt + question)

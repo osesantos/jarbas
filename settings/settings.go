@@ -10,6 +10,7 @@ import (
 	"jarbas-go/main/utils"
 
 	"github.com/osesantos/resulto"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -26,10 +27,16 @@ type Settings struct {
 	SaveMessages bool   `json:"save_messages"`
 }
 
-func GetSettings() Settings {
+func GetSettings(cCtx *cli.Context) Settings {
+
+	model := GetModel().Unwrap()
+	if cCtx.String("model") != "" {
+		model = cCtx.String("model")
+	}
+
 	return Settings{
 		APIKey:       GetKey().Unwrap(),
-		Model:        GetModel().Unwrap(),
+		Model:        model,
 		Vendor:       GetVendor().Unwrap(),
 		SaveMessages: GetSaveMessages().Unwrap(),
 	}
