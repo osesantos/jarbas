@@ -39,6 +39,15 @@ docker push registry.local/gomind:tag
 - [ ] Implement deduplication (hash or last-modified).  
 - [ ] Test with a new note and verify it appears in Qdrant.  
 
+```mermaid
+flowchart TD
+    A[Obsidian Vault Repo] -->|git pull| B[Sync Job in Cluster]
+    B --> C[Chunk Notes + Create Embeddings]
+    C --> D[Qdrant VectorDB]
+    D -->|indexed context| E[GoMind]
+    E -->|RAG queries| F[Jarbas 2.0]
+```
+
 ---
 
 ## 4. GoMind ↔ Qdrant Integration
@@ -50,6 +59,24 @@ docker push registry.local/gomind:tag
   - Build a prompt with context for Mistral.  
 - [ ] Expose an action like `searchNotes` inside GoMind.  
 - [ ] Test the full flow (Jarbas asks → GoMind answers with RAG context).  
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Jarbas
+    participant GoMind
+    participant Qdrant
+    participant Mistral
+
+    User->>Jarbas: Question
+    Jarbas->>GoMind: Forward query
+    GoMind->>Qdrant: Get relevant embeddings
+    Qdrant-->>GoMind: Top-N notes
+    GoMind->>Mistral: Prompt with context
+    Mistral-->>GoMind: Answer
+    GoMind-->>Jarbas: Enriched response
+    Jarbas-->>User: Final answer
+```
 
 ---
 
