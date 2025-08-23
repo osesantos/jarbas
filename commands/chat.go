@@ -199,6 +199,7 @@ func _listRoles() (string, error) {
 		model.SoftwareEngineer,
 		model.CloudEngineer,
 		model.Writer,
+		model.Pentester,
 	}
 
 	role := ""
