@@ -144,18 +144,9 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 
 	defer func() {
 		if settings.SaveMessages {
-			titlePrompt :=
-				`
-			I need a title for the conversation.
-			Please provide a short and descriptive title for the conversation.
-			Keep in mind that the response will be used directly as the file name, so your response should not contain any special characters or spaces and should be concise.
-			YOU MUST NOT RESPOND WITH ANYTHING OTHER THAN THE TITLE.
-			Fomat MUST ALWAYS BE: "Title of the conversation"
-			With no additional text or explanation.
-			With no more than 5 words.
-			`
+			titlePrompt := prompts.GetChatTitlePrompt(messages[0].Content)
 
-			title := actions.ChatQuestion(messages, titlePrompt, settings, systemPrompt).LastMessage
+			title := actions.SingleQuestion(titlePrompt, settings, "")
 
 			fmt.Println(Saving)
 			fmt.Println("Saving conversation with title:", title)
