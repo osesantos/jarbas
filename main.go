@@ -12,6 +12,7 @@ import (
 	"jarbas-go/main/settings"
 
 	"github.com/charmbracelet/glamour"
+	"github.com/pterm/pterm"
 	"github.com/urfave/cli/v2"
 )
 
@@ -61,7 +62,9 @@ func main() {
 					}
 
 					query := cCtx.Args().First()
+					spinner, _ := pterm.DefaultSpinner.Start("Asking MCP...")
 					answer := commands.McpQuery(settings, query)
+					spinner.Success("MCP answered:")
 					out, err := renderer.Render(answer)
 					if err != nil {
 						fmt.Println("Error rendering message:", err)
