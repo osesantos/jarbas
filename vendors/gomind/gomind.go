@@ -3,6 +3,7 @@ package gomind
 import (
 	"bytes"
 	"encoding/json"
+	"jarbas-go/main/model"
 	"jarbas-go/main/settings"
 	"net/http"
 
@@ -15,6 +16,11 @@ type GomindRequest struct {
 
 type GomindResponse struct {
 	Answer string `json:"answer"`
+}
+
+type ChatRequest struct {
+	Title    string          `json:"title"`
+	Messages []model.Message `json:"messages"`
 }
 
 func DoSingleQuestion(input string, settings settings.Settings) resulto.Result[string] {
@@ -61,4 +67,39 @@ func doMCPRequest(body GomindRequest) (GomindResponse, error) {
 	}
 
 	return respData, nil
+}
+
+func StoreChat(title string, messages []model.Message) resulto.Result[bool] {
+	chatRequest := ChatRequest{
+		Title:    title,
+		Messages: messages,
+	}
+
+	// Convert the request body to JSON
+	jsonData, err := json.Marshal(chatRequest)
+	if err != nil {
+		return resulto.Failure[bool](err)
+	}
+
+	// Create an HTTP request with the necessary headers
+	req, err := http.NewRequest("POST", "http://gomind.home/store_chat", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return resulto.Failure[bool](err)
+	}
+
+	req.Header.Set("content-type", "application/json")
+
+	// Send the HTTP request and read the response
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return resulto.Failure[bool](err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return resulto.Failure[bool](nil)
+	}
+
+	return resulto.Success(true)
 }

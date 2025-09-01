@@ -11,6 +11,7 @@ import (
 	"jarbas-go/main/prompts"
 	"jarbas-go/main/settings"
 	"jarbas-go/main/utils"
+	"jarbas-go/main/vendors/gomind"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/charmbracelet/glamour"
@@ -153,11 +154,19 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 			fmt.Println(Saving)
 			fmt.Println("Saving conversation with title:", title)
 
+			// Save conversation to cache
 			err := SaveConversation(model.Chat{
 				Messages: messages,
 				Title:    title,
 			})
 			if err != nil {
+				return
+			}
+
+			// Save conversation to Gomind
+			result := gomind.StoreChat(title, messages)
+			if result.IsErr() {
+				fmt.Println("Error saving conversation to Gomind:", result.UnwrapErr().Error())
 				return
 			}
 		}
