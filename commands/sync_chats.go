@@ -19,21 +19,13 @@ func SyncChats() {
 	for _, chat := range chats {
 		spinner.UpdateText("Syncing conversation: " + chat)
 
-		conversation, err := _loadConversation(chat)
-		if err != nil {
-			fmt.Println("Error loading conversation:", err)
-			continue
-		}
+		conversation, _ := _loadConversation(chat)
 
 		title := conversation.Title
 		messages := conversation.Messages
 
 		// Save conversation to Gomind
-		result := gomind.StoreChat(title, messages)
-		if result.IsErr() {
-			fmt.Println("Error saving conversation to Gomind:", result.Err)
-			continue
-		}
+		gomind.StoreChat(title, messages)
 	}
 
 	spinner.Success("All conversations synced with Gomind!")
