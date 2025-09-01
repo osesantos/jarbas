@@ -56,6 +56,10 @@ func DoChatQuestion(messages []model.Message, question string, settings settings
 		return resulto.Failure[model.Answer](err)
 	}
 
+	if respData["error"] != nil {
+		return resulto.Failure[model.Answer](fmt.Errorf("openai error: %v", respData["error"]))
+	}
+
 	// TODO: Implement a better way to handle the response, by using a struct and parsing the JSON
 	lastMessage := respData["choices"].([]any)[0].(map[string]any)["message"].(map[string]any)["content"].(string)
 	messagesRequest := respData["choices"].([]any)[0].(map[string]any)["message"].(map[string]any)
