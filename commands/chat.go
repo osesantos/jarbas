@@ -15,6 +15,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/charmbracelet/glamour"
+	"github.com/pterm/pterm"
 )
 
 const (
@@ -147,12 +148,13 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 
 	defer func() {
 		if settings.SaveMessages {
+			spinner, _ := pterm.DefaultSpinner.Start("Syncing conversations with Gomind...")
+
 			titlePrompt := prompts.GetChatTitlePrompt(messages[0].Content)
 
 			title := actions.SingleQuestion(titlePrompt, settings, "")
 
-			fmt.Println(Saving)
-			fmt.Println("Saving conversation with title:", title)
+			spinner.UpdateText("Syncing conversation: " + title)
 
 			// Save conversation to cache
 			err := SaveConversation(model.Chat{
@@ -169,6 +171,8 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 				fmt.Println("Error saving conversation to Gomind:", result.UnwrapErr().Error())
 				return
 			}
+
+			spinner.Success("Conversation synced with Gomind!")
 		}
 	}()
 
