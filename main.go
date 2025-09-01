@@ -11,6 +11,7 @@ import (
 	"jarbas-go/main/prompts"
 	"jarbas-go/main/settings"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/urfave/cli/v2"
 )
 
@@ -38,6 +39,34 @@ func main() {
 					err := commands.Chat(settings, nil, false)
 					if err != nil {
 						return err
+					}
+					return nil
+				},
+			},
+			{
+				Name:    "mcp",
+				Aliases: []string{"mcp"},
+				Usage:   "Do a single question using MCP backend",
+				Action: func(cCtx *cli.Context) error {
+					settings := settings.GetSettings(cCtx)
+
+					renderer, err := glamour.NewTermRenderer(
+						glamour.WithStandardStyle("dark"),
+						glamour.WithEmoji(),
+						glamour.WithWordWrap(0),
+						glamour.WithTableWrap(true),
+					)
+					if err != nil {
+						return fmt.Errorf("error initializing glamour renderer: %w", err)
+					}
+
+					query := cCtx.Args().First()
+					answer := commands.McpQuery(settings, query)
+					out, err := renderer.Render(answer)
+					if err != nil {
+						fmt.Println("Error rendering message:", err)
+					} else {
+						fmt.Println(out)
 					}
 					return nil
 				},

@@ -51,6 +51,7 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 	fmt.Println("")
 
 	withToken := false
+
 	role := model.CloudEngineer
 	systemPrompt := ""
 	for {
@@ -109,36 +110,37 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 			} else {
 				fmt.Println("\u001B[1;31mtoken information deactivated!\u001B[0m")
 			}
-		} else {
-			systemPrompt = prompts.MapToSystemPrompt(role)
-			memories := GetMemories().Unwrap()
-			if len(memories) > 0 {
-				systemPrompt = prompts.AddMemory(systemPrompt, memories) // Add memories to the system prompt
-			}
+		}
 
-			answer := actions.ChatQuestion(messages, input, settings, systemPrompt)
-			messages = answer.PreviousMessages
-			if withToken {
-				fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt)
-				fmt.Println(Separator)
-				out, err := renderer.Render(answer.LastMessage)
-				if err != nil {
-					fmt.Println("Error rendering message:", err)
-				} else {
-					fmt.Println(out)
-				}
-				fmt.Println(Separator)
+		systemPrompt = prompts.MapToSystemPrompt(role)
+		memories := GetMemories().Unwrap()
+		if len(memories) > 0 {
+			systemPrompt = prompts.AddMemory(systemPrompt, memories) // Add memories to the system prompt
+		}
+
+		answer := actions.ChatQuestion(messages, input, settings, systemPrompt)
+		messages = answer.PreviousMessages
+
+		if withToken {
+			fmt.Println(TokenPrompt + answer.TotalToken + " " + DefaultPrompt)
+			fmt.Println(Separator)
+			out, err := renderer.Render(answer.LastMessage)
+			if err != nil {
+				fmt.Println("Error rendering message:", err)
 			} else {
-				fmt.Println(DefaultPrompt)
-				fmt.Println(Separator)
-				out, err := renderer.Render(answer.LastMessage)
-				if err != nil {
-					fmt.Println("Error rendering message:", err)
-				} else {
-					fmt.Println(out)
-				}
-				fmt.Println(Separator)
+				fmt.Println(out)
 			}
+			fmt.Println(Separator)
+		} else {
+			fmt.Println(DefaultPrompt)
+			fmt.Println(Separator)
+			out, err := renderer.Render(answer.LastMessage)
+			if err != nil {
+				fmt.Println("Error rendering message:", err)
+			} else {
+				fmt.Println(out)
+			}
+			fmt.Println(Separator)
 		}
 	}
 
