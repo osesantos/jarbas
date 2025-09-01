@@ -122,6 +122,15 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "sync",
+				Aliases: []string{"s"},
+				Usage:   "sync saved chats to the gomind server",
+				Action: func(cCtx *cli.Context) error {
+					commands.SyncChats()
+					return nil
+				},
+			},
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{

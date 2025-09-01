@@ -105,3 +105,13 @@ func GetConversations() (model.Chat, error) {
 
 	return conversation, nil
 }
+
+func GetAllConversationFiles() ([]string, error) {
+	path := GetCacheDir()
+	files, err := filepath.Glob(filepath.Join(path, "*.json"))
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
+}
