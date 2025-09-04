@@ -97,10 +97,7 @@ func Chat(settings settings.Settings, messages []model.Message, isOldConversatio
 				return err
 			}
 
-			messages = append(messages, model.Message{
-				Role:    model.System,
-				Content: prompts.MapToSystemPrompt(role),
-			})
+			systemPrompt = prompts.MapToSystemPrompt(role)
 
 			continue
 		}
